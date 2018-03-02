@@ -38,6 +38,10 @@ namespace Nexa.ViewModels
             DeviceWrapper wrapper = new DeviceWrapper(schema);
             MyDeviceWrapper.Add(wrapper);
 
+            MyDeviceWrapper.OrderBy(p => p.TimePoint);
+
+            TextBoxTimePoint = string.Empty;
+
         }
 
         private void DoSaveNewDevice()
@@ -88,7 +92,7 @@ namespace Nexa.ViewModels
             set
             {
                 _TextBoxDescription = value;
-                NotifyPropertyChanged(nameof(_TextBoxDescription));
+                NotifyPropertyChanged(nameof(TextBoxDescription));
             }
         }
 
