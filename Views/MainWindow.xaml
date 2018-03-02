@@ -1,0 +1,130 @@
+﻿<Window x:Class="Nexa.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Nexa"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:vm="clr-namespace:Nexa.ViewModels"
+        xmlns:models="clr-namespace:Nexa.Models"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="500" Width="700">
+    <Window.DataContext>
+        <vm:MainWindowViewModel />
+    </Window.DataContext>
+    <Window.Resources>
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.Resources>
+            <ObjectDataProvider x:Key="EnumDayOfWeek" MethodName="GetValues"
+                                ObjectType="{x:Type system:Enum}">
+                <ObjectDataProvider.MethodParameters>
+
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80" />
+            <RowDefinition Height="90" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="20" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Margin="5">
+            <StackPanel Margin="5">
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <TextBlock Width="100" VerticalAlignment="Center">Nexa Device:</TextBlock>
+                    <TextBox Width="200" Name="txtDeviceName" Text="{Binding TextBoxDeviceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <TextBlock Width="100" VerticalAlignment="Center">Beskrivning:</TextBlock>
+                    <TextBox Width="200" x:Name="txtDescription" 
+                             Text="{Binding TextBoxDescription, Mode=TwoWay, 
+                        UpdateSourceTrigger=PropertyChanged}">
+
+                    </TextBox>
+                    <Button Width="90" x:Name="btnSave" Margin="10,0,0,0" Command="{Binding SaveDevice}">Spara</Button>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <ListView 
+            ItemsSource="{Binding Devices}"
+            SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
+            
+            Grid.Row="1">
+
+            <ListView.View>
+
+                <GridView>
+                    <GridViewColumn Header="Device" Width="150" DisplayMemberBinding="{Binding DeviceName}"></GridViewColumn>
+                    <GridViewColumn Header="Device beskrivning" Width="500"
+                                    DisplayMemberBinding="{Binding DeviceDescription}">
+                    </GridViewColumn>
+
+                </GridView>
+            </ListView.View>
+
+        </ListView>
+
+
+        <StackPanel Orientation="Vertical" Margin="5" Grid.Row="2">
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <TextBlock Width="50" VerticalAlignment="Center">Vald:</TextBlock>
+                <TextBlock Width="50" VerticalAlignment="Center" Text="{Binding SelectedDevice.DeviceName}"/>
+            </StackPanel>
+
+            <Line Fill="Aqua"></Line>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <TextBlock Width="60" VerticalAlignment="Center">Veckodag:</TextBlock>
+                <ComboBox x:Name="cboVeckodagar" Margin="5,0,0,0" SelectedItem="{Binding SelectedWeekDay}">
+                    <ComboBoxItem Content="Måndag" IsSelected="True" />
+                    <ComboBoxItem Content="Tisdag" />
+                    <ComboBoxItem Content="Onsdag" />
+                    <ComboBoxItem Content="Torsdag" />
+                    <ComboBoxItem Content="Fredag" />
+                    <ComboBoxItem Content="Lördag" />
+                    <ComboBoxItem Content="Söndag" />
+                </ComboBox>
+                <TextBlock Width="60" VerticalAlignment="Center" Margin="5,0,0,0">Händelse:</TextBlock>
+                <ComboBox x:Name="cboEvent" Margin="5,0,0,0" SelectedItem="{Binding SelectedAction}">
+                    <ComboBoxItem Content="PÅ" IsSelected="True"/>
+                    <ComboBoxItem Content="AV"/>
+                </ComboBox>
+
+                <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">Tidpunkt:</TextBlock>
+                <TextBox x:Name="txtTimePoint" MaxLength="5"
+                         Text="{Binding TextBoxTimePoint}"  
+                         Width="40" Margin="5,0,0,0">
+
+                </TextBox>
+
+                <Button Command="{Binding SaveSchema}" 
+                        Margin="5,0,0,0" Width="50"
+                        Content="Spara" >
+                </Button>
+
+            </StackPanel>
+
+
+            <ListView ItemsSource="{Binding MyDeviceWrapper}" 
+                          SelectedItem="{Binding SelectedWrapperSchema}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Device" DisplayMemberBinding="{Binding DeviceName}" />
+                        <GridViewColumn Header="Veckodag" DisplayMemberBinding="{Binding WeekDay}"/>
+                        <GridViewColumn Header="Händelse" DisplayMemberBinding="{Binding ActionText}"/>
+                        <GridViewColumn Header="Tidpunkt" DisplayMemberBinding="{Binding TimePoint}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+
+        </StackPanel>
+
+        <!--<Button Grid.Row="3" Width="80" HorizontalAlignment="Right">Spara</Button>-->
+
+    </Grid>
+</Window>
