@@ -20,8 +20,8 @@ namespace Nexa.Models
 
         public Device Device { get => myDevice;  }
 
-        private string _weekDay;
-        public string WeekDay
+        private int _weekDay;
+        public int WeekDay
         {
             get => _weekDay;
             set
@@ -42,8 +42,8 @@ namespace Nexa.Models
             }
         }
 
-        private string _timePoint;
-        public string TimePoint
+        private DateTime _timePoint;
+        public DateTime TimePoint
         {
             get => _timePoint;
             set

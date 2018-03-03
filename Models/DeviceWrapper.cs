@@ -19,11 +19,15 @@ namespace Nexa.Models
         }
 
         public string DeviceName => _schemaItem.Device.DeviceName;
-        public string WeekDay => _schemaItem.WeekDay;
+        public string DeviceDescription => _schemaItem.Device.DeviceDescription;
+        public int WeekDay => _schemaItem.WeekDay;
         public string ActionText => _schemaItem.ActionText;
-        public string TimePoint => _schemaItem.TimePoint;
+        public DateTime TimePoint => _schemaItem.TimePoint;
 
-
+        public Device GetDevice
+        {
+            get => _schemaItem.Device;
+        }
 
     }
 }

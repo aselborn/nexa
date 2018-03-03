@@ -9,9 +9,9 @@
         xmlns:models="clr-namespace:Nexa.Models"
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="700">
-    <Window.DataContext>
+    <!--<Window.DataContext>
         <vm:MainWindowViewModel />
-    </Window.DataContext>
+    </Window.DataContext>-->
     <Window.Resources>
 
     </Window.Resources>
@@ -80,13 +80,15 @@
             <StackPanel Orientation="Horizontal" Margin="5">
                 <TextBlock Width="60" VerticalAlignment="Center">Veckodag:</TextBlock>
                 <ComboBox x:Name="cboVeckodagar" Margin="5,0,0,0" SelectedItem="{Binding SelectedWeekDay}">
-                    <ComboBoxItem Content="Måndag" IsSelected="True" />
-                    <ComboBoxItem Content="Tisdag" />
-                    <ComboBoxItem Content="Onsdag" />
-                    <ComboBoxItem Content="Torsdag" />
-                    <ComboBoxItem Content="Fredag" />
-                    <ComboBoxItem Content="Lördag" />
-                    <ComboBoxItem Content="Söndag" />
+
+                    <ComboBoxItem Content="Måndag" Tag="1" IsSelected="True" />
+                    <ComboBoxItem Content="Tisdag" Tag="2" />
+                    <ComboBoxItem Content="Onsdag" Tag="3" />
+                    <ComboBoxItem Content="Torsdag" Tag="4" />
+                    <ComboBoxItem Content="Fredag" Tag="5" />
+                    <ComboBoxItem Content="Lördag" Tag="6" />
+                    <ComboBoxItem Content="Söndag" Tag="7" />
+
                 </ComboBox>
                 <TextBlock Width="60" VerticalAlignment="Center" Margin="5,0,0,0">Händelse:</TextBlock>
                 <ComboBox x:Name="cboEvent" Margin="5,0,0,0" SelectedItem="{Binding SelectedAction}">

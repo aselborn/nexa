@@ -15,26 +15,27 @@ namespace Nexa.ViewModels
         private DataApi _dataApi = new DataApi();
         public ObservableCollection<DeviceWrapper> MyDeviceWrapper { get; } = new ObservableCollection<DeviceWrapper>();
         public ObservableCollection<Device> Devices { get; } = new ObservableCollection<Device>();
+        
         private Boolean IsAllowed = true;
+
         public MainWindowViewModel()
         {
-            //DataApi.GetAllItems().ForEach(DeviceWrapper.Add);
-            //DataApi.GetDevices().ForEach(Devices.Add);
-            _dataApi.Devices.ForEach(Devices.Add);
-            //_dataApi.AllItems.ForEach(DeviceWrapper.Add);
+            _dataApi.GetDbDevices.ForEach(Devices.Add);
         }
 
+      
 
         public ICommand SaveDevice => new RelayCommand(x => DoSaveNewDevice(), x => IsAllowed);
         public ICommand SaveSchema => new RelayCommand(x => DoSaveNewSchema(), x => IsAllowed);
 
         private void DoSaveNewSchema()
         {
+
             Schema schema = new Schema(_selectedDevice);
             schema.ActionText = _selectedAction.Content.ToString();
-            schema.TimePoint = _TextBoxTimePoint;
-            schema.WeekDay = _selectedWeekday.Content.ToString();
-
+            schema.TimePoint = DateTime.Parse(_TextBoxTimePoint);
+            Int32.TryParse(_selectedWeekday.Tag.ToString(), out int veckodag);
+            schema.WeekDay = veckodag;
             DeviceWrapper wrapper = new DeviceWrapper(schema);
             MyDeviceWrapper.Add(wrapper);
 
@@ -104,6 +105,16 @@ namespace Nexa.ViewModels
             {
                 _selectedDevice = value;
                 NotifyPropertyChanged(nameof(SelectedDevice));
+
+                MyDeviceWrapper.Clear();
+
+                List<DeviceWrapper> forThisDevice = _dataApi.GetAllConfiguration.FindAll(p => p.GetDevice.DeviceId == _selectedDevice.DeviceId);
+                
+
+                //List<DeviceWrapper> wrappers = _dataApi.AllItems.FindAll(p => p.GetDevice.DeviceId == _selectedDevice.DeviceId);
+                //wrappers.ForEach(MyDeviceWrapper.Add);
+
+                forThisDevice.ForEach(MyDeviceWrapper.Add);
             }
         }
 
