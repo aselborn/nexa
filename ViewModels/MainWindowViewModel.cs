@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
+using static Nexa.Models.DeviceWrapper;
 
 namespace Nexa.ViewModels
 {
@@ -21,12 +22,19 @@ namespace Nexa.ViewModels
         public MainWindowViewModel()
         {
             _dataApi.GetDbDevices.ForEach(Devices.Add);
+            
         }
 
       
 
         public ICommand SaveDevice => new RelayCommand(x => DoSaveNewDevice(), x => IsAllowed);
         public ICommand SaveSchema => new RelayCommand(x => DoSaveNewSchema(), x => IsAllowed);
+        public ICommand PrepareNew => new RelayCommand(x => DoPrepareNew(), x => IsAllowed);
+
+        private void DoPrepareNew()
+        {
+            
+        }
 
         private void DoSaveNewSchema()
         {
@@ -60,6 +68,8 @@ namespace Nexa.ViewModels
 
             TextBoxDescription = string.Empty;
             TextBoxDeviceName = string.Empty;
+
+            _dataApi.SaveNewDevice(device);
             
         }
 
@@ -107,16 +117,13 @@ namespace Nexa.ViewModels
                 NotifyPropertyChanged(nameof(SelectedDevice));
 
                 MyDeviceWrapper.Clear();
-
-                List<DeviceWrapper> forThisDevice = _dataApi.GetAllConfiguration.FindAll(p => p.GetDevice.DeviceId == _selectedDevice.DeviceId);
-                
-
-                //List<DeviceWrapper> wrappers = _dataApi.AllItems.FindAll(p => p.GetDevice.DeviceId == _selectedDevice.DeviceId);
-                //wrappers.ForEach(MyDeviceWrapper.Add);
-
+                List<DeviceWrapper> forThisDevice = _dataApi.GetWrappers(_selectedDevice.DeviceId);
                 forThisDevice.ForEach(MyDeviceWrapper.Add);
+
             }
         }
+
+        
 
         private DeviceWrapper _selectedWrapperSchema;
         public DeviceWrapper SelectedWrapperSchema
@@ -126,7 +133,16 @@ namespace Nexa.ViewModels
             {
                 _selectedWrapperSchema = value;
                 NotifyPropertyChanged(nameof(SelectedWrapperSchema));
+
+                ViewInformation();
+
             }
+        }
+
+        private void ViewInformation()
+        {
+            EnumDayOfWeek veckodag = (EnumDayOfWeek)_selectedWrapperSchema.WeekDay;
+            string s = veckodag.ToString();
         }
 
         private ComboBoxItem _selectedWeekday;

@@ -10,7 +10,7 @@ namespace Nexa.Models
     {
         public enum EnumDayOfWeek
         {
-            Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
+            Söndag, Måndag, Tisdag, Onsdag, Torsdag, Fredag, Lördag
         }
         private readonly Schema _schemaItem;
         public DeviceWrapper(Schema schema)

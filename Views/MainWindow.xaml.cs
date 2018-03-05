@@ -23,8 +23,8 @@ namespace Nexa
     {
         public MainWindow()
         {
-            this.DataContext = new MainWindowViewModel();
             InitializeComponent();
+            this.DataContext = new MainWindowViewModel();
         }
 
        

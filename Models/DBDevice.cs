@@ -7,7 +7,8 @@ namespace Nexa.Models
     public class DBDevice 
     {
         [Key]
-        public int DeviceId { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int deviceID { get; set; }
         public string DeviceName { get; set; }
         public string DeviceType { get; set; }
     

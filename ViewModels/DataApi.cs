@@ -15,6 +15,41 @@ namespace Nexa.ViewModels
             dbContext = new DeviceContext();
         }
 
+        public List<DeviceWrapper> GetWrappers(int deviceId)
+        {
+            List<DeviceWrapper> wrappers = new List<DeviceWrapper>();
+
+            List<DBSchema> schemas = dbContext.timeschema.Where(p => p.DeviceId == deviceId)
+                .OrderByDescending(x => x.DayOfWeek)
+                .OrderByDescending(z => z.TimePoint).ToList();
+
+            foreach (DBSchema schema in schemas)
+            {
+
+                DBDevice d = dbContext.devices.Find(schema.DeviceId);
+                
+                DeviceWrapper wrap = new DeviceWrapper
+                    (
+                    new Schema
+                    (
+                        new Device()
+                        {
+                            DeviceId = d.deviceID,
+                            DeviceDescription = d.DeviceType,
+                            DeviceName = d.DeviceName
+                        }
+                        )
+                    {
+                        WeekDay = schema.DayOfWeek,
+                        ActionText = schema.Action.ToString(),
+                        TimePoint = schema.TimePoint
+                    });
+
+                wrappers.Add(wrap);
+            }
+
+            return wrappers;
+        }
         public List<DeviceWrapper> GetAllConfiguration
         {
             get
@@ -22,7 +57,12 @@ namespace Nexa.ViewModels
                 List<DeviceWrapper> wrappers = new List<DeviceWrapper>();
                 foreach (DBDevice d in dbContext.devices)
                 {
-                    var selection = dbContext.timeschema.Where(p => p.DeviceId == d.DeviceId);
+
+                    
+
+                    var selection = dbContext.timeschema.Where(p => p.DeviceId == d.deviceID);
+                    int n = dbContext.timeschema.Count();
+
                     foreach (DBSchema schema in selection)
                     {
                         
@@ -32,7 +72,7 @@ namespace Nexa.ViewModels
                             (
                                 new Device()
                                 {
-                                    DeviceId = d.DeviceId,
+                                    DeviceId = d.deviceID,
                                     DeviceDescription = d.DeviceType,
                                     DeviceName = d.DeviceName
                                 }
@@ -50,6 +90,21 @@ namespace Nexa.ViewModels
                 return wrappers;
             }
         }
+
+        public void SaveNewDevice(Device device)
+        {
+            try
+            {
+                dbContext.devices.Add(new DBDevice() { DeviceName = device.DeviceName, DeviceType = device.DeviceDescription , deviceID=device.DeviceId});
+                dbContext.SaveChanges();
+            }
+            catch (Exception ep)
+            {
+                Exception exception = ep;
+            }
+            
+        }
+
         private List<Device> _dbDevices { get; } = new List<Device>();
         public List<Device> GetDbDevices
         {
@@ -57,7 +112,7 @@ namespace Nexa.ViewModels
             {
                 foreach (DBDevice d in dbContext.devices)
                 {
-                    _dbDevices.Add(new Device() { DeviceId = d.DeviceId, DeviceDescription = d.DeviceType, DeviceName = d.DeviceName });
+                    _dbDevices.Add(new Device() { DeviceId = d.deviceID, DeviceDescription = d.DeviceType, DeviceName = d.DeviceName });
                 }
 
                 return _dbDevices;

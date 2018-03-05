@@ -29,8 +29,9 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="80" />
             <RowDefinition Height="90" />
+            <RowDefinition Height="80" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="20" />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Margin="5">
             <StackPanel Margin="5">
@@ -73,13 +74,13 @@
         <StackPanel Orientation="Vertical" Margin="5" Grid.Row="2">
             <StackPanel Orientation="Horizontal" Margin="5">
                 <TextBlock Width="50" VerticalAlignment="Center">Vald:</TextBlock>
-                <TextBlock Width="50" VerticalAlignment="Center" Text="{Binding SelectedDevice.DeviceName}"/>
+                <TextBlock Width="200" VerticalAlignment="Center" Text="{Binding SelectedDevice.DeviceName}"/>
             </StackPanel>
 
             <Line Fill="Aqua"></Line>
             <StackPanel Orientation="Horizontal" Margin="5">
                 <TextBlock Width="60" VerticalAlignment="Center">Veckodag:</TextBlock>
-                <ComboBox x:Name="cboVeckodagar" Margin="5,0,0,0" SelectedItem="{Binding SelectedWeekDay}">
+                <ComboBox x:Name="cboVeckodagar" Margin="5,0,0,0"  SelectedItem="{Binding SelectedWeekDay}">
 
                     <ComboBoxItem Content="Måndag" Tag="1" IsSelected="True" />
                     <ComboBoxItem Content="Tisdag" Tag="2" />
@@ -91,9 +92,10 @@
 
                 </ComboBox>
                 <TextBlock Width="60" VerticalAlignment="Center" Margin="5,0,0,0">Händelse:</TextBlock>
-                <ComboBox x:Name="cboEvent" Margin="5,0,0,0" SelectedItem="{Binding SelectedAction}">
-                    <ComboBoxItem Content="PÅ" IsSelected="True"/>
-                    <ComboBoxItem Content="AV"/>
+                <ComboBox x:Name="cboEvent" Margin="5,0,0,0" 
+                          SelectedItem="{Binding SelectedAction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <ComboBoxItem Content="PÅ" IsSelected="True" />
+                    <ComboBoxItem Content="AV" />
                 </ComboBox>
 
                 <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">Tidpunkt:</TextBlock>
@@ -108,13 +110,26 @@
                         Content="Spara" >
                 </Button>
 
+                <Button Command="{Binding PrepareNew}" 
+                        Margin="5,0,0,0" Width="50"
+                        FocusManager.FocusedElement="{Binding ElementName=txtTimePoint}"
+                        Content="Ny" >
+                    
+                    
+                    
+                </Button>
+
             </StackPanel>
 
+        </StackPanel>
 
-            <ListView ItemsSource="{Binding MyDeviceWrapper}" 
+        <ListView Grid.Row="3"
+            ItemsSource="{Binding MyDeviceWrapper}" ScrollViewer.CanContentScroll="True"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"
                           SelectedItem="{Binding SelectedWrapperSchema}">
                 <ListView.View>
-                    <GridView>
+                    <GridView ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        ScrollViewer.CanContentScroll="True" >
                         <GridViewColumn Header="Device" DisplayMemberBinding="{Binding DeviceName}" />
                         <GridViewColumn Header="Veckodag" DisplayMemberBinding="{Binding WeekDay}"/>
                         <GridViewColumn Header="Händelse" DisplayMemberBinding="{Binding ActionText}"/>
@@ -123,10 +138,7 @@
                 </ListView.View>
             </ListView>
 
-
-        </StackPanel>
-
         <!--<Button Grid.Row="3" Width="80" HorizontalAlignment="Right">Spara</Button>-->
-
+        
     </Grid>
 </Window>

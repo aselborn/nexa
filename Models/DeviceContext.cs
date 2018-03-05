@@ -14,6 +14,12 @@ namespace Nexa.Models
         {
             var sqliteConnectionInitializer = new SqliteCreateDatabaseIfNotExists<DeviceContext>(modelBuilder);
             Database.SetInitializer(sqliteConnectionInitializer);
+
+            /*
+            modelBuilder.Entity<DBDevice>()
+                .HasKey(p => p.deviceID);
+            modelBuilder.Entity<DBDevice>().Property(p => p.deviceID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
+            */
             base.OnModelCreating(modelBuilder);
         }
 
