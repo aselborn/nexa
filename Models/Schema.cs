@@ -28,6 +28,7 @@ namespace Nexa.Models
             {
                 _weekDay = value;
                 NotifyPropertyChanged(nameof(WeekDay));
+                
             }
         }
 

@@ -19,10 +19,12 @@ namespace Nexa.ViewModels
         {
             List<DeviceWrapper> wrappers = new List<DeviceWrapper>();
 
+            /*
             List<DBSchema> schemas = dbContext.timeschema.Where(p => p.DeviceId == deviceId)
                 .OrderByDescending(x => x.DayOfWeek)
                 .OrderByDescending(z => z.TimePoint).ToList();
-
+            */
+            List<DBSchema> schemas = dbContext.timeschema.Where(p => p.DeviceId == deviceId).ToList();
             foreach (DBSchema schema in schemas)
             {
 
@@ -95,7 +97,9 @@ namespace Nexa.ViewModels
         {
             try
             {
+
                 dbContext.devices.Add(new DBDevice() { DeviceName = device.DeviceName, DeviceType = device.DeviceDescription , deviceID=device.DeviceId});
+                
                 dbContext.SaveChanges();
             }
             catch (Exception ep)

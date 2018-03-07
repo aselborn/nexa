@@ -117,7 +117,9 @@ namespace Nexa.ViewModels
                 NotifyPropertyChanged(nameof(SelectedDevice));
 
                 MyDeviceWrapper.Clear();
+                
                 List<DeviceWrapper> forThisDevice = _dataApi.GetWrappers(_selectedDevice.DeviceId);
+                forThisDevice.OrderBy(x => x.WeekDay).ThenBy(n => n.TimePoint);
                 forThisDevice.ForEach(MyDeviceWrapper.Add);
 
             }
