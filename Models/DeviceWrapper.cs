@@ -12,6 +12,7 @@ namespace Nexa.Models
         {
             Söndag, Måndag, Tisdag, Onsdag, Torsdag, Fredag, Lördag
         }
+
         private readonly Schema _schemaItem;
         public DeviceWrapper(Schema schema)
         {

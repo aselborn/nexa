@@ -93,6 +93,24 @@ namespace Nexa.ViewModels
             }
         }
 
+        public void SaveSchemaForDevice(Schema schema)
+        {
+            try
+            {
+                DBSchema dBSchema = new DBSchema() { Action = schema.ActionText == "ON" ? 1 : 0, DayOfWeek = schema.WeekDay, DeviceId = schema.Device.DeviceId, TimePoint = schema.TimePoint };
+
+                dbContext.timeschema.Add(dBSchema);
+
+
+                int row = dbContext.SaveChanges();
+
+            }
+            catch (Exception ep)
+            {
+                Exception exception = ep;
+            }
+        }
+
         public void SaveNewDevice(Device device)
         {
             try

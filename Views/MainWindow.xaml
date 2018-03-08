@@ -84,8 +84,7 @@
             <Line Fill="Aqua"></Line>
             <StackPanel Orientation="Horizontal" Margin="5">
                 <TextBlock Width="60" VerticalAlignment="Center">Veckodag:</TextBlock>
-                <ComboBox x:Name="cboVeckodagar" Margin="5,0,0,0"  SelectedItem="{Binding SelectedWeekDay}">
-
+                <!--<ComboBox x:Name="cboVeckodagar" Margin="5,0,0,0"  SelectedItem="{Binding SelectedWeekDay, Mode=TwoWay}">
                     <ComboBoxItem Content="Måndag" Tag="1" IsSelected="True" />
                     <ComboBoxItem Content="Tisdag" Tag="2" />
                     <ComboBoxItem Content="Onsdag" Tag="3" />
@@ -94,7 +93,15 @@
                     <ComboBoxItem Content="Lördag" Tag="6" />
                     <ComboBoxItem Content="Söndag" Tag="7" />
 
+                </ComboBox>-->
+
+                <ComboBox HorizontalAlignment="Left" x:Name="cboWeekDay"
+                          DisplayMemberPath="WeekDayName"
+                          SelectedValuePath="Value"
+                          SelectedItem="{Binding SelWeekDay, Mode=TwoWay}"
+                          ItemsSource="{Binding Path=WeekDays}">
                 </ComboBox>
+
                 <TextBlock Width="60" VerticalAlignment="Center" Margin="5,0,0,0">Händelse:</TextBlock>
                 <ComboBox x:Name="cboEvent" Margin="5,0,0,0" 
                           SelectedItem="{Binding SelectedAction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
@@ -118,31 +125,59 @@
                         Margin="5,0,0,0" Width="50"
                         FocusManager.FocusedElement="{Binding ElementName=txtTimePoint}"
                         Content="Ny" >
-                    
-                    
-                    
+
+
+
                 </Button>
 
             </StackPanel>
 
         </StackPanel>
 
-        <ListView Grid.Row="3" Margin="5,10"
+        <!--<ListView Grid.Row="3" Margin="5,10"
             ItemsSource="{Binding MyDeviceWrapper}" ScrollViewer.CanContentScroll="True"
                       ScrollViewer.VerticalScrollBarVisibility="Auto"
                           SelectedItem="{Binding SelectedWrapperSchema}">
-                <ListView.View>
-                    <GridView ScrollViewer.VerticalScrollBarVisibility="Auto"
+            <ListView.View>
+                <GridView ScrollViewer.VerticalScrollBarVisibility="Auto"
                         ScrollViewer.CanContentScroll="True" >
-                        <!--<GridViewColumn Header="Device" DisplayMemberBinding="{Binding DeviceName}" />-->
-                        <GridViewColumn Header="Veckodag" DisplayMemberBinding="{Binding WeekDay}"/>
-                        <GridViewColumn Header="Händelse" DisplayMemberBinding="{Binding ActionText}"/>
-                        <GridViewColumn Header="Tidpunkt" DisplayMemberBinding="{Binding TimePoint}"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+                    -->
+        <!--<GridViewColumn Header="Device" DisplayMemberBinding="{Binding DeviceName}" />-->
+        <!--
+                    <GridViewColumn Header="Veckodag" DisplayMemberBinding="{Binding WeekDay}"/>
+                    <GridViewColumn Header="Händelse" DisplayMemberBinding="{Binding ActionText}"/>
+                    <GridViewColumn Header="Tidpunkt" DisplayMemberBinding="{Binding TimePoint}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>-->
+
+        <DataGrid ItemsSource="{Binding MyDeviceWrapper}"
+                  Grid.Row="3"
+            AutoGenerateColumns="False">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Veckodag" Binding="{Binding WeekDay}" />
+                <DataGridTextColumn Header="Händlelse" Binding="{Binding ActionText}" />
+                <DataGridTextColumn Header="Tidpunkt" Binding="{Binding TimePoint}" />
+
+                <DataGridTemplateColumn Header="combobox">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox>
+                                <ComboBoxItem>Item 1</ComboBoxItem>
+                                <ComboBoxItem>Item 2</ComboBoxItem>
+                                <ComboBoxItem>Item 3</ComboBoxItem>
+                            </ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+
+        </DataGrid>
+
 
         <!--<Button Grid.Row="3" Width="80" HorizontalAlignment="Right">Spara</Button>-->
-        
+
     </Grid>
 </Controls:MetroWindow>
