@@ -18,7 +18,7 @@ namespace Nexa.ViewModels
         public ObservableCollection<DeviceWrapper> MyDeviceWrapper { get; } = new ObservableCollection<DeviceWrapper>();
         public ObservableCollection<Device> Devices { get; } = new ObservableCollection<Device>();
 
-        public ObservableCollection<WeekDays> WeekDays { get; } = new ObservableCollection<WeekDays>();
+        public ObservableCollection<WeekDays> WeekDaysCollection { get; } = new ObservableCollection<WeekDays>();
 
         private Boolean IsAllowed = false;
         private Boolean IsSaveAllowed = false;
@@ -30,7 +30,7 @@ namespace Nexa.ViewModels
             _dataApi.GetDbDevices.ForEach(Devices.Add);
             for (int n = 0; n < 7; n++)
             {
-                WeekDays.Add(new ViewModels.WeekDays() { WeekDayName = WeekDayName(n), WeekDayId = n });
+                WeekDaysCollection.Add(new ViewModels.WeekDays() { WeekDayName = WeekDayName(n), WeekDayId = n });
             }
         }
 

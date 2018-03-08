@@ -99,7 +99,7 @@
                           DisplayMemberPath="WeekDayName"
                           SelectedValuePath="Value"
                           SelectedItem="{Binding SelWeekDay, Mode=TwoWay}"
-                          ItemsSource="{Binding Path=WeekDays}">
+                          ItemsSource="{Binding Path=WeekDaysCollection}">
                 </ComboBox>
 
                 <TextBlock Width="60" VerticalAlignment="Center" Margin="5,0,0,0">Händelse:</TextBlock>
@@ -163,10 +163,10 @@
                 <DataGridTemplateColumn Header="combobox">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ComboBox>
-                                <ComboBoxItem>Item 1</ComboBoxItem>
+                            <ComboBox ItemsSource="{Binding WeekDaysCollection}">
+                                <!--<ComboBoxItem>Item 1</ComboBoxItem>
                                 <ComboBoxItem>Item 2</ComboBoxItem>
-                                <ComboBoxItem>Item 3</ComboBoxItem>
+                                <ComboBoxItem>Item 3</ComboBoxItem>-->
                             </ComboBox>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
