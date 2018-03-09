@@ -11,7 +11,7 @@ using static Nexa.Models.DeviceWrapper;
 
 namespace Nexa.ViewModels
 {
-   
+
     class MainWindowViewModel : ViewModelBase
     {
         private DataApi _dataApi = new DataApi();
@@ -23,8 +23,6 @@ namespace Nexa.ViewModels
         private Boolean IsAllowed = false;
         private Boolean IsSaveAllowed = false;
 
-        public List<string> VeckoDagar = new List<string> { "Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag" };
-
         public MainWindowViewModel()
         {
             _dataApi.GetDbDevices.ForEach(Devices.Add);
@@ -32,9 +30,11 @@ namespace Nexa.ViewModels
             {
                 WeekDaysCollection.Add(new ViewModels.WeekDays() { WeekDayName = WeekDayName(n), WeekDayId = n });
             }
+
+            
         }
 
-      
+
 
         public ICommand SaveDevice => new RelayCommand(x => DoSaveNewDevice(), x => IsSaveAllowed);
         public ICommand SaveSchema => new RelayCommand(x => DoSaveNewSchema(), x => IsAllowed);
@@ -42,7 +42,7 @@ namespace Nexa.ViewModels
 
         private void DoPrepareNew()
         {
-            
+
         }
 
         private void DoSaveNewSchema()
@@ -76,14 +76,14 @@ namespace Nexa.ViewModels
                 return;
             }
 
-            Device device = new Device() { DeviceDescription = _TextBoxDescription, DeviceName = _TextBoxDeviceName, DeviceId=rInt };
+            Device device = new Device() { DeviceDescription = _TextBoxDescription, DeviceName = _TextBoxDeviceName, DeviceId = rInt };
             Devices.Add(device);
 
             TextBoxDescription = string.Empty;
             TextBoxDeviceName = string.Empty;
 
             _dataApi.SaveNewDevice(device);
-            
+
         }
 
 
@@ -130,15 +130,15 @@ namespace Nexa.ViewModels
                 NotifyPropertyChanged(nameof(SelectedDevice));
 
                 MyDeviceWrapper.Clear();
-                
+
                 List<DeviceWrapper> forThisDevice = _dataApi.GetWrappers(_selectedDevice.DeviceId);
-                forThisDevice.OrderBy(x => x.WeekDay).ThenBy(n => n.TimePoint);
+                forThisDevice.OrderBy(x => x.WeekDayAsText).ToList();
                 forThisDevice.ForEach(MyDeviceWrapper.Add);
                 IsSaveAllowed = true;
             }
         }
 
-        
+
 
         private DeviceWrapper _selectedWrapperSchema;
         public DeviceWrapper SelectedWrapperSchema
@@ -156,13 +156,13 @@ namespace Nexa.ViewModels
 
         private void ViewInformation()
         {
-            EnumDayOfWeek veckodag = (EnumDayOfWeek)_selectedWrapperSchema.WeekDay;
-            string s = veckodag.ToString();
-
-            string p = Enum.GetName(typeof(EnumDayOfWeek), _selectedWrapperSchema.WeekDay);
-
-            SelWeekDay = new ViewModels.WeekDays() { WeekDayId = _selectedWrapperSchema.WeekDay, WeekDayName = p };
             
+            SelWeekDay = new ViewModels.WeekDays()
+            {
+                WeekDayId = _selectedWrapperSchema.WeekDay, WeekDayName = WeekDayName(_selectedWrapperSchema.WeekDay)
+            };
+
+            TextBoxTimePoint = _selectedWrapperSchema.TimePointAsString;
         }
 
         private string WeekDayName(int weekDay)
@@ -174,7 +174,7 @@ namespace Nexa.ViewModels
         public ComboBoxItem SelectedWeekDay
         {
             get => _selectedWeekday;
-            
+
             set
             {
                 _selectedWeekday = value;
@@ -188,7 +188,7 @@ namespace Nexa.ViewModels
             get => _selectedAction;
             set
             {
-                _selectedAction= value;
+                _selectedAction = value;
                 NotifyPropertyChanged(nameof(SelectedAction));
             }
         }
@@ -201,10 +201,9 @@ namespace Nexa.ViewModels
             {
                 _selWeekDay = value;
                 NotifyPropertyChanged(nameof(SelWeekDay));
-                
-            }
-        }
 
+            }
+        }        
 
     }
 }

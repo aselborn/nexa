@@ -22,9 +22,10 @@ namespace Nexa.Models
         public string DeviceName => _schemaItem.Device.DeviceName;
         public string DeviceDescription => _schemaItem.Device.DeviceDescription;
         public int WeekDay => _schemaItem.WeekDay;
-        public string ActionText => _schemaItem.ActionText;
+        public string ActionText => _schemaItem.ActionText == "1" ? "PÅ" : "AV";
         public DateTime TimePoint => _schemaItem.TimePoint;
-
+        public string TimePointAsString => $"{_schemaItem.TimePoint:hh:mm}";
+        public string WeekDayAsText => Enum.GetName(typeof(EnumDayOfWeek), (_schemaItem.WeekDay -1));
         public Device GetDevice
         {
             get => _schemaItem.Device;

@@ -25,11 +25,15 @@ namespace Nexa.ViewModels
                 .OrderByDescending(z => z.TimePoint).ToList();
             */
             List<DBSchema> schemas = dbContext.timeschema.Where(p => p.DeviceId == deviceId).ToList();
+            schemas = schemas.OrderBy(p => p.DayOfWeek).ThenBy(z => z.TimePoint).ToList();
+
             foreach (DBSchema schema in schemas)
             {
 
                 DBDevice d = dbContext.devices.Find(schema.DeviceId);
                 
+                
+
                 DeviceWrapper wrap = new DeviceWrapper
                     (
                     new Schema
@@ -47,9 +51,11 @@ namespace Nexa.ViewModels
                         TimePoint = schema.TimePoint
                     });
 
+
                 wrappers.Add(wrap);
             }
 
+            
             return wrappers;
         }
         public List<DeviceWrapper> GetAllConfiguration
