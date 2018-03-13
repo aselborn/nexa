@@ -2,14 +2,14 @@
 {
     public class WeekDays : ViewModelBase
     {
-        private string _weekDayName;
-        public string WeekDayName
+        private string _nameOfWeekDay;
+        public string NameOfWeekDay
         {
-            get => _weekDayName;
+            get => _nameOfWeekDay;
             set
             {
-                _weekDayName = value;
-                NotifyPropertyChanged(nameof(WeekDayName));
+                _nameOfWeekDay = value;
+                NotifyPropertyChanged(nameof(NameOfWeekDay));
             }
         }
 
@@ -27,7 +27,7 @@
         
         public override string ToString()
         {
-            return WeekDayName;
+            return NameOfWeekDay;
         }
         
     }

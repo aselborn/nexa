@@ -21,22 +21,19 @@ namespace Nexa.ViewModels
         public ObservableCollection<WeekDays> WeekDaysCollection { get; } = new ObservableCollection<WeekDays>();
 
         private Boolean IsAllowed = false;
-        private Boolean IsSaveAllowed = false;
+        private Boolean IsSaveEnabled = false;
 
         public MainWindowViewModel()
         {
             _dataApi.GetDbDevices.ForEach(Devices.Add);
             for (int n = 0; n < 7; n++)
             {
-                WeekDaysCollection.Add(new ViewModels.WeekDays() { WeekDayName = WeekDayName(n), WeekDayId = n });
+                WeekDaysCollection.Add(new ViewModels.WeekDays() { NameOfWeekDay = WeekDayName(n), WeekDayId = n });
             }
-
-            
         }
 
 
-
-        public ICommand SaveDevice => new RelayCommand(x => DoSaveNewDevice(), x => IsSaveAllowed);
+        public ICommand SaveDevice => new RelayCommand(x => DoSaveNewDevice(), x => IsSaveEnabled);
         public ICommand SaveSchema => new RelayCommand(x => DoSaveNewSchema(), x => IsAllowed);
         public ICommand PrepareNew => new RelayCommand(x => DoPrepareNew(), x => IsAllowed);
 
@@ -49,7 +46,7 @@ namespace Nexa.ViewModels
         {
 
             Schema schema = new Schema(_selectedDevice);
-            schema.ActionText = _selectedAction.Content.ToString();
+            schema.ActionText = _selectedAction.ToString();
             schema.TimePoint = DateTime.Parse(_TextBoxTimePoint);
             schema.WeekDay = _selWeekDay.WeekDayId;
 
@@ -134,7 +131,7 @@ namespace Nexa.ViewModels
                 List<DeviceWrapper> forThisDevice = _dataApi.GetWrappers(_selectedDevice.DeviceId);
                 forThisDevice.OrderBy(x => x.WeekDayAsText).ToList();
                 forThisDevice.ForEach(MyDeviceWrapper.Add);
-                IsSaveAllowed = true;
+                IsSaveEnabled = true;
             }
         }
 
@@ -159,10 +156,14 @@ namespace Nexa.ViewModels
             
             SelWeekDay = new ViewModels.WeekDays()
             {
-                WeekDayId = _selectedWrapperSchema.WeekDay, WeekDayName = WeekDayName(_selectedWrapperSchema.WeekDay)
+                WeekDayId = _selectedWrapperSchema.WeekDay, NameOfWeekDay = WeekDayName(_selectedWrapperSchema.WeekDay)
             };
 
+            SelectedWeekIndex = _selectedWrapperSchema.WeekDay - 1;
+            SelectedAction = _selectedWrapperSchema.ActionText == "PÅ" ? 0 : 1;
             TextBoxTimePoint = _selectedWrapperSchema.TimePointAsString;
+            IsSaveEnabled = true;
+
         }
 
         private string WeekDayName(int weekDay)
@@ -182,16 +183,16 @@ namespace Nexa.ViewModels
             }
         }
 
-        private ComboBoxItem _selectedAction;
-        public ComboBoxItem SelectedAction
-        {
-            get => _selectedAction;
-            set
-            {
-                _selectedAction = value;
-                NotifyPropertyChanged(nameof(SelectedAction));
-            }
-        }
+        //private ComboBoxItem _selectedAction;
+        //public ComboBoxItem SelectedAction
+        //{
+        //    get => _selectedAction;
+        //    set
+        //    {
+        //        _selectedAction = value;
+        //        NotifyPropertyChanged(nameof(SelectedAction));
+        //    }
+        //}
 
         private WeekDays _selWeekDay;
         public WeekDays SelWeekDay
@@ -203,7 +204,30 @@ namespace Nexa.ViewModels
                 NotifyPropertyChanged(nameof(SelWeekDay));
 
             }
-        }        
+        }
+
+        private int _selectedWeekIndex;
+        public int SelectedWeekIndex
+        {
+            get { return _selectedWeekIndex; }
+            set
+            {
+                _selectedWeekIndex = value;
+                NotifyPropertyChanged(nameof(SelectedWeekIndex));
+            }
+        }
+
+        private int _selectedAction;
+
+        public int SelectedAction
+        {
+            get =>_selectedAction; 
+            set
+            {
+                _selectedAction = value;
+                NotifyPropertyChanged(nameof(SelectedAction));
+            }
+        }
 
     }
 }

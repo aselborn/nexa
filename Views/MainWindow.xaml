@@ -88,17 +88,24 @@
 
                 <ComboBox HorizontalAlignment="Left" x:Name="cboWeekDay"
                           ItemsSource="{Binding Path=WeekDaysCollection}"
-                          
-                          SelectedItem="{Binding WeekDayName, RelativeSource={RelativeSource Self}}"
-                          IsSynchronizedWithCurrentItem="True"
-                          DisplayMemberPath="WeekDayName"
-                          >
+                          SelectedIndex="{Binding SelectedWeekIndex}"
+                          DisplayMemberPath="{Binding Path=WeekDaysCollection.NameOfWeekDay}" 
+                          IsSynchronizedWithCurrentItem="True">
+
+                    <!--<ComboBox.ItemTemplate>
+                    SelectedItem="{Binding WeekDayName, RelativeSource={RelativeSource Self}}"
+                        <DataTemplate>
+                            <TextBlock Text="{Binding NameOfWeekDay}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>-->
                     
                 </ComboBox>
 
-
+                <TextBlock Text="{Binding Path=WeekDaysCollection.WeekdayName}" />
+                
                 <TextBlock Width="60" VerticalAlignment="Center" Margin="5,0,0,0">Händelse:</TextBlock>
                 <ComboBox x:Name="cboEvent" Margin="5,0,0,0" 
+                          SelectedIndex="{Binding SelectedAction}"
                           SelectedItem="{Binding SelectedAction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                     <ComboBoxItem Content="PÅ" IsSelected="True" />
                     <ComboBoxItem Content="AV" />
@@ -112,11 +119,13 @@
                 </TextBox>
 
                 <Button Command="{Binding SaveSchema}" 
+                        IsEnabled="{Binding IsSaveEnabled}"
                         Margin="5,0,0,0" Width="50"
                         Content="Spara" >
                 </Button>
 
-                <Button Command="{Binding PrepareNew}" 
+                <Button Command="{Binding PrepareNew}"
+                        
                         Margin="5,0,0,0" Width="50"
                         FocusManager.FocusedElement="{Binding ElementName=txtTimePoint}"
                         Content="Ny" >
