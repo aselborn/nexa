@@ -20,8 +20,9 @@ namespace Nexa.ViewModels
 
         public ObservableCollection<WeekDays> WeekDaysCollection { get; } = new ObservableCollection<WeekDays>();
 
-        private Boolean IsAllowed = false;
-        private Boolean IsSaveEnabled = false;
+        private Boolean _isAllowed;
+        private Boolean _isSaveEnabled ;
+        private Boolean _isNewEnabled;
 
         public MainWindowViewModel()
         {
@@ -33,9 +34,9 @@ namespace Nexa.ViewModels
         }
 
 
-        public ICommand SaveDevice => new RelayCommand(x => DoSaveNewDevice(), x => IsSaveEnabled);
-        public ICommand SaveSchema => new RelayCommand(x => DoSaveNewSchema(), x => IsAllowed);
-        public ICommand PrepareNew => new RelayCommand(x => DoPrepareNew(), x => IsAllowed);
+        public ICommand SaveDevice => new RelayCommand(x => DoSaveNewDevice(), x => IsAllowed);
+        public ICommand SaveSchema => new RelayCommand(x => DoSaveNewSchema(), x => IsSaveEnabled);
+        public ICommand PrepareNew => new RelayCommand(x => DoPrepareNew(), x => IsNewEnabled);
 
         private void DoPrepareNew()
         {
@@ -59,30 +60,52 @@ namespace Nexa.ViewModels
 
             TextBoxTimePoint = string.Empty;
 
-
-
         }
 
         private void DoSaveNewDevice()
         {
-            Random r = new Random();
-            int rInt = r.Next(0, 100); //for ints
+            NexaDevice nexaDevice = new NexaDevice() { DeviceName = _TextBoxDeviceName, DeviceType = _TextBoxDescription };
 
-            if (_TextBoxDeviceName.Length == 0)
-            {
-                return;
-            }
-
-            Device device = new Device() { DeviceDescription = _TextBoxDescription, DeviceName = _TextBoxDeviceName, DeviceId = rInt };
-            Devices.Add(device);
-
+            
             TextBoxDescription = string.Empty;
             TextBoxDeviceName = string.Empty;
 
-            _dataApi.SaveNewDevice(device);
+            _dataApi.SaveNewDevice(nexaDevice);
+
+            Devices.Clear();
+            _dataApi.GetDbDevices.ForEach(Devices.Add);
 
         }
 
+        public bool IsAllowed
+        {
+            get => _isAllowed;
+            set
+            {
+                _isAllowed = value;
+                NotifyPropertyChanged(nameof(IsAllowed));
+            }
+        }
+        public bool IsNewEnabled
+        {
+            get => _isNewEnabled;
+            set
+            {
+                _isNewEnabled = value;
+                NotifyPropertyChanged(nameof(IsNewEnabled));
+
+            }
+        }
+
+        public bool IsSaveEnabled
+        {
+            get => _isSaveEnabled;
+            set
+            {
+                _isSaveEnabled = value;
+                NotifyPropertyChanged(nameof(IsSaveEnabled));
+            }
+        }
 
         private string _TextBoxTimePoint;
         public string TextBoxTimePoint
@@ -103,6 +126,8 @@ namespace Nexa.ViewModels
             {
                 _TextBoxDeviceName = value;
                 NotifyPropertyChanged(nameof(TextBoxDeviceName));
+
+                IsAllowed = value.Length > 0 ? true : false;
             }
         }
 
@@ -131,7 +156,8 @@ namespace Nexa.ViewModels
                 List<DeviceWrapper> forThisDevice = _dataApi.GetWrappers(_selectedDevice.DeviceId);
                 forThisDevice.OrderBy(x => x.WeekDayAsText).ToList();
                 forThisDevice.ForEach(MyDeviceWrapper.Add);
-                IsSaveEnabled = true;
+                
+                IsNewEnabled = true;
             }
         }
 
@@ -162,6 +188,7 @@ namespace Nexa.ViewModels
             SelectedWeekIndex = _selectedWrapperSchema.WeekDay - 1;
             SelectedAction = _selectedWrapperSchema.ActionText == "PÅ" ? 0 : 1;
             TextBoxTimePoint = _selectedWrapperSchema.TimePointAsString;
+            
             IsSaveEnabled = true;
 
         }
@@ -182,17 +209,6 @@ namespace Nexa.ViewModels
                 NotifyPropertyChanged(nameof(SelectedWeekDay));
             }
         }
-
-        //private ComboBoxItem _selectedAction;
-        //public ComboBoxItem SelectedAction
-        //{
-        //    get => _selectedAction;
-        //    set
-        //    {
-        //        _selectedAction = value;
-        //        NotifyPropertyChanged(nameof(SelectedAction));
-        //    }
-        //}
 
         private WeekDays _selWeekDay;
         public WeekDays SelWeekDay

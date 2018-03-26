@@ -117,13 +117,19 @@ namespace Nexa.ViewModels
             }
         }
 
-        public void SaveNewDevice(Device device)
+        public void SaveNexaTimeschema(NexaTimeSchema schema)
+        {
+
+        }
+
+        public void SaveNewDevice(NexaDevice device)
         {
             try
             {
+                //dbContext.NexaDeviceObject.Add(new NexaDevice() { DeviceName = device.DeviceName, DeviceType = device.DeviceType });
+                dbContext.NexaDeviceObject.Add(device);
+                int n = dbContext.SaveChanges();
 
-                dbContext.devices.Add(new DBDevice() { DeviceName = device.DeviceName, DeviceType = device.DeviceDescription , deviceID=device.DeviceId});
-                
                 dbContext.SaveChanges();
             }
             catch (Exception ep)
@@ -138,10 +144,15 @@ namespace Nexa.ViewModels
         {
             get
             {
-                foreach (DBDevice d in dbContext.devices)
+                foreach (NexaDevice d in dbContext.NexaDeviceObject)
                 {
-                    _dbDevices.Add(new Device() { DeviceId = d.deviceID, DeviceDescription = d.DeviceType, DeviceName = d.DeviceName });
+                    _dbDevices.Add(new Device() { DeviceId = d.DeviceId, DeviceDescription = d.DeviceType, DeviceName = d.DeviceName });
                 }
+
+                //foreach (DBDevice d in dbContext.devices)
+                //{
+                //    _dbDevices.Add(new Device() { DeviceId = d.deviceID, DeviceDescription = d.DeviceType, DeviceName = d.DeviceName });
+                //}
 
                 return _dbDevices;
             }

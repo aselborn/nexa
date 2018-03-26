@@ -32,7 +32,7 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
-            <RowDefinition Height="auto" />
+            <RowDefinition Height="150" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="30" />
@@ -41,9 +41,13 @@
             <StackPanel Margin="5">
                 <StackPanel Orientation="Horizontal" Margin="5">
                     <TextBlock Width="100" VerticalAlignment="Center">Nexa Device:</TextBlock>
-                    <TextBox Width="200" Name="txtDeviceName" Text="{Binding TextBoxDeviceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    
+                    <TextBox Width="200" Name="txtDeviceName" 
+                             Text="{Binding TextBoxDeviceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+
+                    </TextBox>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="1">
+                <StackPanel Orientation="Horizontal" Margin="5">
                     <TextBlock Width="100" VerticalAlignment="Center">Beskrivning:</TextBlock>
                     <TextBox Width="200" x:Name="txtDescription" 
                              Text="{Binding TextBoxDescription, Mode=TwoWay, 
@@ -125,7 +129,7 @@
                 </Button>
 
                 <Button Command="{Binding PrepareNew}"
-                        
+                        IsEnabled="{Binding IsNewEnabled}"
                         Margin="5,0,0,0" Width="50"
                         FocusManager.FocusedElement="{Binding ElementName=txtTimePoint}"
                         Content="Ny" >

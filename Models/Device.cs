@@ -9,6 +9,15 @@ namespace Nexa.Models
 {
     public class Device : ViewModelBase
     {
+        private string _deviceType;
+
+        public string DeviceType
+        {
+            get { return _deviceType; }
+            set { _deviceType = value; }
+        }
+
+
         private int _deviceId;
         public int DeviceId {
             get => _deviceId;

@@ -89,6 +89,8 @@
     <Compile Include="Models\DBSchema.cs" />
     <Compile Include="Models\DeviceContext.cs" />
     <Compile Include="Models\DeviceWrapper.cs" />
+    <Compile Include="Models\NexaDevice.cs" />
+    <Compile Include="Models\Person.cs" />
     <Compile Include="Models\Schema.cs" />
     <Compile Include="Models\Device.cs" />
     <Compile Include="ViewModels\DataApi.cs" />
@@ -101,6 +103,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Models\NexaTimeSchema.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="ViewModels\WeekDays.cs" />
