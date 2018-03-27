@@ -9,16 +9,16 @@ namespace Nexa.Models
 {
     public class Schema : ViewModelBase
     {
-        private readonly Device myDevice;
+        private readonly NexaDevice myDevice;
 
         
 
-        public Schema(Device device)
+        public Schema(NexaDevice device)
         {
             myDevice = device;
         }
 
-        public Device Device { get => myDevice;  }
+        public NexaDevice Device { get => myDevice;  }
 
         private int _weekDay;
         public int WeekDay

@@ -16,14 +16,14 @@ namespace Nexa.ViewModels
     {
         private DataApi _dataApi = new DataApi();
         public ObservableCollection<DeviceWrapper> MyDeviceWrapper { get; } = new ObservableCollection<DeviceWrapper>();
-        public ObservableCollection<Device> Devices { get; } = new ObservableCollection<Device>();
+        public ObservableCollection<NexaDevice> Devices { get; } = new ObservableCollection<NexaDevice>();
 
         public ObservableCollection<WeekDays> WeekDaysCollection { get; } = new ObservableCollection<WeekDays>();
 
         private Boolean _isAllowed;
         private Boolean _isSaveEnabled ;
         private Boolean _isNewEnabled;
-
+        private Boolean _isDeleteEnabled;
         public MainWindowViewModel()
         {
             _dataApi.GetDbDevices.ForEach(Devices.Add);
@@ -37,6 +37,20 @@ namespace Nexa.ViewModels
         public ICommand SaveDevice => new RelayCommand(x => DoSaveNewDevice(), x => IsAllowed);
         public ICommand SaveSchema => new RelayCommand(x => DoSaveNewSchema(), x => IsSaveEnabled);
         public ICommand PrepareNew => new RelayCommand(x => DoPrepareNew(), x => IsNewEnabled);
+
+        public ICommand DeleteDevice => new RelayCommand(p => DoDelete(p), p => IsDeleteEnabled);
+        public ICommand ExitApplication => new RelayCommand(p => DoExit(), p => true);
+
+        private void DoExit()
+        {
+            System.Windows.Application.Current.Shutdown();
+        }
+
+        private void DoDelete(object x)
+        {
+            _dataApi.DeleteDevice((NexaDevice)x);
+            Devices.Remove((NexaDevice)x);
+        }
 
         private void DoPrepareNew()
         {
@@ -74,6 +88,7 @@ namespace Nexa.ViewModels
 
             Devices.Clear();
             _dataApi.GetDbDevices.ForEach(Devices.Add);
+            
 
         }
 
@@ -96,6 +111,18 @@ namespace Nexa.ViewModels
 
             }
         }
+
+        public Boolean IsDeleteEnabled
+        {
+            get => _isDeleteEnabled;
+            set
+            {
+                _isDeleteEnabled = value;
+                NotifyPropertyChanged(nameof(IsDeleteEnabled));
+            }
+        }
+            
+
 
         public bool IsSaveEnabled
         {
@@ -142,13 +169,14 @@ namespace Nexa.ViewModels
             }
         }
 
-        private Device _selectedDevice;
-        public Device SelectedDevice
+        private NexaDevice _selectedDevice;
+        public NexaDevice SelectedDevice
         {
             get => _selectedDevice;
             set
             {
-                _selectedDevice = value;
+
+                _selectedDevice = value == null ? _selectedDevice : value;
                 NotifyPropertyChanged(nameof(SelectedDevice));
 
                 MyDeviceWrapper.Clear();
@@ -158,6 +186,7 @@ namespace Nexa.ViewModels
                 forThisDevice.ForEach(MyDeviceWrapper.Add);
                 
                 IsNewEnabled = true;
+                IsDeleteEnabled = forThisDevice.Count > 0 ? false : true;
             }
         }
 
@@ -169,9 +198,10 @@ namespace Nexa.ViewModels
             get => _selectedWrapperSchema;
             set
             {
-                _selectedWrapperSchema = value;
+                _selectedWrapperSchema = value == null ? _selectedWrapperSchema : value;
                 NotifyPropertyChanged(nameof(SelectedWrapperSchema));
 
+                
                 ViewInformation();
 
             }
@@ -186,7 +216,8 @@ namespace Nexa.ViewModels
             };
 
             SelectedWeekIndex = _selectedWrapperSchema.WeekDay - 1;
-            SelectedAction = _selectedWrapperSchema.ActionText == "PÅ" ? 0 : 1;
+            SelectedAction = _selectedWrapperSchema.ActionText == "PÅ" ? "0" : "1";
+            //SelectedAction = _selectedWrapperSchema.ActionText;
             TextBoxTimePoint = _selectedWrapperSchema.TimePointAsString;
             
             IsSaveEnabled = true;
@@ -233,9 +264,9 @@ namespace Nexa.ViewModels
             }
         }
 
-        private int _selectedAction;
+        private string _selectedAction;
 
-        public int SelectedAction
+        public string SelectedAction
         {
             get =>_selectedAction; 
             set

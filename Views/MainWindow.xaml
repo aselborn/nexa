@@ -76,6 +76,24 @@
                 </GridView>
             </ListView.View>
 
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Delete" Command="{Binding DeleteDevice}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}">
+                        <MenuItem.Style>
+                            <Style TargetType="{x:Type MenuItem}">
+                                <Setter Property="IsEnabled" Value="False"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems.Count}" Value="1">
+                                        <Setter Property="IsEnabled" Value="True"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </MenuItem.Style>
+                    </MenuItem>
+                </ContextMenu>
+            </ListView.ContextMenu>
+
         </ListView>
 
         <!--DataContext="{Binding RelativeSource={RelativeSource Self}}"-->
@@ -152,39 +170,23 @@
                 <DataGridTextColumn Header="Veckodag" Binding="{Binding WeekDayAsText}" />
                 <DataGridTextColumn Header="Händlelse" Binding="{Binding ActionText}" />
                 <DataGridTextColumn Header="Tidpunkt" Binding="{Binding TimePointAsString}" />
-                
-
-                <!--<DataGridTemplateColumn Header="combobox">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <ComboBox ItemsSource="{Binding Path=DataContext.WeekDaysCollection, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-                                      SelectedItem="{Binding Path=DataContext.SelWeekDay, Mode=TwoWay}">
-                            </ComboBox>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>-->
-
-                <!--<DataGridComboBoxColumn Header="dag" SelectedItemBinding="{Binding WeekDaysCollection}">
-                    <DataGridComboBoxColumn.ElementStyle>
-                        <Style TargetType="ComboBox">
-                            <Setter Property="ItemsSource" 
-                                    Value="{Binding Path=DataContext.WeekDaysCollection, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
-                        </Style>
-                    </DataGridComboBoxColumn.ElementStyle>
-                    <DataGridComboBoxColumn.EditingElementStyle>
-                        <Style TargetType="{x:Type ComboBox}">
-                            <Setter Property="ItemsSource"
-                    Value="{Binding Path=DataContext.WeekDaysCollection, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
-                        </Style>
-                    </DataGridComboBoxColumn.EditingElementStyle>
-                </DataGridComboBoxColumn>-->
 
             </DataGrid.Columns>
 
         </DataGrid>
 
 
-        <!--<Button Grid.Row="3" Width="80" HorizontalAlignment="Right">Spara</Button>-->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="2" >
+            <Button Grid.Row="4" Width="100" 
+                    x:Name="btnWriteConfig">Write Config
+            </Button>
+            <Button Grid.Row="4" 
+                    Margin="20,0,0,0"
+                    Command="{Binding ExitApplication}"
+                    Width="80" HorizontalAlignment="Right">Exit</Button>
+            
+        </StackPanel>
+        <!--<Button Grid.Row="4" Width="80" HorizontalAlignment="Right">Spara</Button>-->
 
     </Grid>
 </Controls:MetroWindow>

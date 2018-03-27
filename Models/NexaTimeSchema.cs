@@ -10,7 +10,7 @@ namespace Nexa.Models
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("DeviceId")]
+        //[ForeignKey("DeviceId")]
         public int DeviceId { get; set; }
 
         public DateTime TimePoint { get; set; }

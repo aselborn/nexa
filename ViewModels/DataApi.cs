@@ -15,10 +15,13 @@ namespace Nexa.ViewModels
             dbContext = new DeviceContext();
         }
 
+        
+        
+        
         public List<DeviceWrapper> GetWrappers(int deviceId)
         {
             List<DeviceWrapper> wrappers = new List<DeviceWrapper>();
-
+            List<NexaTimeSchema> timeschemas = dbContext.NexaTimeSchema.Where(p => p.DeviceId == deviceId).ToList();
             /*
             List<DBSchema> schemas = dbContext.timeschema.Where(p => p.DeviceId == deviceId)
                 .OrderByDescending(x => x.DayOfWeek)
@@ -26,6 +29,10 @@ namespace Nexa.ViewModels
             */
             List<DBSchema> schemas = dbContext.timeschema.Where(p => p.DeviceId == deviceId).ToList();
             schemas = schemas.OrderBy(p => p.DayOfWeek).ThenBy(z => z.TimePoint).ToList();
+
+            timeschemas.OrderBy(p => p.Dayofweek).ThenBy(a => a.TimePoint).ToList();
+
+
 
             foreach (DBSchema schema in schemas)
             {
@@ -38,10 +45,10 @@ namespace Nexa.ViewModels
                     (
                     new Schema
                     (
-                        new Device()
+                        new NexaDevice()
                         {
                             DeviceId = d.deviceID,
-                            DeviceDescription = d.DeviceType,
+                            DeviceType = d.DeviceType,
                             DeviceName = d.DeviceName
                         }
                         )
@@ -58,6 +65,13 @@ namespace Nexa.ViewModels
             
             return wrappers;
         }
+
+        public void DeleteDevice(NexaDevice nexaDevice)
+        {
+            dbContext.NexaDeviceObject.Remove(nexaDevice);
+            int n = dbContext.SaveChanges();
+        }
+
         public List<DeviceWrapper> GetAllConfiguration
         {
             get
@@ -78,10 +92,10 @@ namespace Nexa.ViewModels
                             (
                             new Schema
                             (
-                                new Device()
+                                new NexaDevice()
                                 {
                                     DeviceId = d.deviceID,
-                                    DeviceDescription = d.DeviceType,
+                                    DeviceType = d.DeviceType,
                                     DeviceName = d.DeviceName
                                 }
                                 )
@@ -105,7 +119,16 @@ namespace Nexa.ViewModels
             {
                 DBSchema dBSchema = new DBSchema() { Action = schema.ActionText == "ON" ? 1 : 0, DayOfWeek = schema.WeekDay, DeviceId = schema.Device.DeviceId, TimePoint = schema.TimePoint };
 
-                dbContext.timeschema.Add(dBSchema);
+                NexaTimeSchema timeSchema = new NexaTimeSchema()
+                {
+                    Action=schema.ActionText == "ON" ? 1: 0,
+                    DeviceId=schema.Device.DeviceId,
+                    Dayofweek=schema.WeekDay,
+                    TimePoint=schema.TimePoint,
+                    UpdatedAt=DateTime.Now 
+                };
+
+                dbContext.NexaTimeSchema.Add(timeSchema);
 
 
                 int row = dbContext.SaveChanges();
@@ -139,27 +162,17 @@ namespace Nexa.ViewModels
             
         }
 
-        private List<Device> _dbDevices { get; } = new List<Device>();
-        public List<Device> GetDbDevices
+        private List<NexaDevice> _dbDevices { get; } = new List<NexaDevice>();
+        public List<NexaDevice> GetDbDevices
         {
             get
             {
-                foreach (NexaDevice d in dbContext.NexaDeviceObject)
-                {
-                    _dbDevices.Add(new Device() { DeviceId = d.DeviceId, DeviceDescription = d.DeviceType, DeviceName = d.DeviceName });
-                }
-
-                //foreach (DBDevice d in dbContext.devices)
-                //{
-                //    _dbDevices.Add(new Device() { DeviceId = d.deviceID, DeviceDescription = d.DeviceType, DeviceName = d.DeviceName });
-                //}
-
-                return _dbDevices;
+                return dbContext.NexaDeviceObject.ToList();
             }
         }
 
-        private List<Device> mDevices;
-        public List<Device> Devices
+        private List<NexaDevice> mDevices;
+        public List<NexaDevice> Devices
         {
             get
             {
@@ -183,10 +196,10 @@ namespace Nexa.ViewModels
         {
             List<DeviceWrapper> wrapper = new List<DeviceWrapper>();
 
-            List<Device> someDevices = GetDevices();
+            List<NexaDevice> someDevices = GetDevices();
 
             int n = 1;
-            foreach (Device d in someDevices)
+            foreach (NexaDevice d in someDevices)
             {
                 Schema schema = null;
                 if (n % 2 == 0)
@@ -205,14 +218,14 @@ namespace Nexa.ViewModels
             return wrapper;
         }
 
-        private List<Device> GetDevices()
+        private List<NexaDevice> GetDevices()
         {
-            List<Device> devices = new List<Device>();
+            List<NexaDevice> devices = new List<NexaDevice>();
 
-            Device device = new Device() { DeviceName = "Nexa 1", DeviceId = 1, DeviceComment = "Första kommentaren kommer här", DeviceDescription = "Första beskrivningen" };
-            Device device2 = new Device() { DeviceName = "Nexa 2", DeviceId = 2, DeviceComment = "Andra kommentaren kommer här!!", DeviceDescription = "Andra Beskrivningen" };
-            Device device3 = new Device() { DeviceName = "Nexa 3", DeviceId = 3, DeviceComment = "Tredjekommentaren kommer här!", DeviceDescription = "Tredje beskrivningen!" };
-            Device device4 = new Device() { DeviceName = "Nexa 4", DeviceId = 4, DeviceComment = "Fjärde kommentaren kommer här!", DeviceDescription = "Fjärde beskrivningen!" };
+            NexaDevice device = new NexaDevice() { DeviceName = "Nexa 1", DeviceId = 1 };
+            NexaDevice device2 = new NexaDevice() { DeviceName = "Nexa 2", DeviceId = 2};
+            NexaDevice device3 = new NexaDevice() { DeviceName = "Nexa 3", DeviceId = 3};
+            NexaDevice device4 = new NexaDevice() { DeviceName = "Nexa 4", DeviceId = 4 };
 
             devices.Add(device);
             devices.Add(device2);
