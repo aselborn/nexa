@@ -45,5 +45,8 @@ namespace Nexa.Models
                 NotifyPropertyChanged(nameof(DeviceType));
             }
         }
+ 
+        public virtual ICollection<NexaTimeSchema> timeschemas { get; set; }
+        
     }
 }

@@ -46,15 +46,15 @@ namespace Nexa.Models
             }
         }
 
-        private string _description;
-        public string DeviceDescription
-        {
-            get => _description;
-            set
-            {
-                _description = value;
-                NotifyPropertyChanged(nameof(DeviceDescription));
-            }
-        }
+        //private string _description;
+        //public string DeviceDescription
+        //{
+        //    get => _description;
+        //    set
+        //    {
+        //        _description = value;
+        //        NotifyPropertyChanged(nameof(DeviceDescription));
+        //    }
+        //}
     }
 }

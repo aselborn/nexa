@@ -85,10 +85,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="library\EnumConverter.cs" />
+    <Compile Include="library\EnumDayOfWeek.cs" />
     <Compile Include="Models\DBDevice.cs" />
     <Compile Include="Models\DBSchema.cs" />
     <Compile Include="Models\DeviceContext.cs" />
-    <Compile Include="Models\DeviceWrapper.cs" />
     <Compile Include="Models\NexaDevice.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Models\Schema.cs" />

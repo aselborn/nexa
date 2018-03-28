@@ -70,7 +70,7 @@
                 <GridView>
                     <GridViewColumn Header="Device" Width="150" DisplayMemberBinding="{Binding DeviceName}"></GridViewColumn>
                     <GridViewColumn Header="Device beskrivning" Width="500"
-                                    DisplayMemberBinding="{Binding DeviceDescription}">
+                                    DisplayMemberBinding="{Binding DeviceType}">
                     </GridViewColumn>
 
                 </GridView>
@@ -160,9 +160,10 @@
 
         </StackPanel>
 
+        <!--ItemsSource="{Binding MyDeviceWrapper}"-->
         <DataGrid 
-            ItemsSource="{Binding MyDeviceWrapper}"
-            SelectedItem="{Binding SelectedWrapperSchema}"
+            ItemsSource="{Binding NexaTimeschemas }"
+            SelectedItem="{Binding SelectedNexaDevice}"
             Grid.Row="3"
             AutoGenerateColumns="False">
 

@@ -1,4 +1,5 @@
-﻿using Nexa.Models;
+﻿using Nexa.library;
+using Nexa.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
-using static Nexa.Models.DeviceWrapper;
+
 
 namespace Nexa.ViewModels
 {
@@ -15,10 +16,11 @@ namespace Nexa.ViewModels
     class MainWindowViewModel : ViewModelBase
     {
         private DataApi _dataApi = new DataApi();
-        public ObservableCollection<DeviceWrapper> MyDeviceWrapper { get; } = new ObservableCollection<DeviceWrapper>();
+        
         public ObservableCollection<NexaDevice> Devices { get; } = new ObservableCollection<NexaDevice>();
-
         public ObservableCollection<WeekDays> WeekDaysCollection { get; } = new ObservableCollection<WeekDays>();
+
+        public ObservableCollection<NexaTimeSchema> NexaTimeschemas { get; set; } = new ObservableCollection<NexaTimeSchema>();
 
         private Boolean _isAllowed;
         private Boolean _isSaveEnabled ;
@@ -65,10 +67,7 @@ namespace Nexa.ViewModels
             schema.TimePoint = DateTime.Parse(_TextBoxTimePoint);
             schema.WeekDay = _selWeekDay.WeekDayId;
 
-            DeviceWrapper wrapper = new DeviceWrapper(schema);
-
-            MyDeviceWrapper.Add(wrapper);
-            MyDeviceWrapper.OrderBy(p => p.TimePoint);
+            
 
             _dataApi.SaveSchemaForDevice(schema);
 
@@ -179,27 +178,25 @@ namespace Nexa.ViewModels
                 _selectedDevice = value == null ? _selectedDevice : value;
                 NotifyPropertyChanged(nameof(SelectedDevice));
 
-                MyDeviceWrapper.Clear();
+                _selectedDevice.timeschemas.ToList().ForEach(NexaTimeschemas.Add);
 
-                List<DeviceWrapper> forThisDevice = _dataApi.GetWrappers(_selectedDevice.DeviceId);
-                forThisDevice.OrderBy(x => x.WeekDayAsText).ToList();
-                forThisDevice.ForEach(MyDeviceWrapper.Add);
+               
                 
                 IsNewEnabled = true;
-                IsDeleteEnabled = forThisDevice.Count > 0 ? false : true;
+                //IsDeleteEnabled = forThisDevice.Count > 0 ? false : true;
             }
         }
 
 
 
-        private DeviceWrapper _selectedWrapperSchema;
-        public DeviceWrapper SelectedWrapperSchema
+        private NexaDevice _selectedNexaDevice;
+        public NexaDevice SelectedNexaDevice
         {
-            get => _selectedWrapperSchema;
+            get => _selectedNexaDevice;
             set
             {
-                _selectedWrapperSchema = value == null ? _selectedWrapperSchema : value;
-                NotifyPropertyChanged(nameof(SelectedWrapperSchema));
+                _selectedNexaDevice = value == null ? _selectedNexaDevice : value;
+                NotifyPropertyChanged(nameof(SelectedNexaDevice));
 
                 
                 ViewInformation();
@@ -210,17 +207,17 @@ namespace Nexa.ViewModels
         private void ViewInformation()
         {
             
-            SelWeekDay = new ViewModels.WeekDays()
-            {
-                WeekDayId = _selectedWrapperSchema.WeekDay, NameOfWeekDay = WeekDayName(_selectedWrapperSchema.WeekDay)
-            };
+            //SelWeekDay = new ViewModels.WeekDays()
+            //{
+            //    WeekDayId = _selectedWrapperSchema.WeekDay, NameOfWeekDay = WeekDayName(_selectedWrapperSchema.WeekDay)
+            //};
 
-            SelectedWeekIndex = _selectedWrapperSchema.WeekDay - 1;
-            SelectedAction = _selectedWrapperSchema.ActionText == "PÅ" ? "0" : "1";
-            //SelectedAction = _selectedWrapperSchema.ActionText;
-            TextBoxTimePoint = _selectedWrapperSchema.TimePointAsString;
+            //SelectedWeekIndex = _selectedWrapperSchema.WeekDay - 1;
+            //SelectedAction = _selectedWrapperSchema.ActionText == "PÅ" ? "0" : "1";
+            ////SelectedAction = _selectedWrapperSchema.ActionText;
+            //TextBoxTimePoint = _selectedWrapperSchema.TimePointAsString;
             
-            IsSaveEnabled = true;
+            //IsSaveEnabled = true;
 
         }
 

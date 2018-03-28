@@ -15,103 +15,25 @@ namespace Nexa.ViewModels
             dbContext = new DeviceContext();
         }
 
-        
-        
-        
-        public List<DeviceWrapper> GetWrappers(int deviceId)
+        public NexaDevice GetDeviceByDeviceId(int deviceId)
         {
-            List<DeviceWrapper> wrappers = new List<DeviceWrapper>();
-            List<NexaTimeSchema> timeschemas = dbContext.NexaTimeSchema.Where(p => p.DeviceId == deviceId).ToList();
-            /*
-            List<DBSchema> schemas = dbContext.timeschema.Where(p => p.DeviceId == deviceId)
-                .OrderByDescending(x => x.DayOfWeek)
-                .OrderByDescending(z => z.TimePoint).ToList();
-            */
-            List<DBSchema> schemas = dbContext.timeschema.Where(p => p.DeviceId == deviceId).ToList();
-            schemas = schemas.OrderBy(p => p.DayOfWeek).ThenBy(z => z.TimePoint).ToList();
-
-            timeschemas.OrderBy(p => p.Dayofweek).ThenBy(a => a.TimePoint).ToList();
-
-
-
-            foreach (DBSchema schema in schemas)
-            {
-
-                DBDevice d = dbContext.devices.Find(schema.DeviceId);
-                
-                
-
-                DeviceWrapper wrap = new DeviceWrapper
-                    (
-                    new Schema
-                    (
-                        new NexaDevice()
-                        {
-                            DeviceId = d.deviceID,
-                            DeviceType = d.DeviceType,
-                            DeviceName = d.DeviceName
-                        }
-                        )
-                    {
-                        WeekDay = schema.DayOfWeek,
-                        ActionText = schema.Action.ToString(),
-                        TimePoint = schema.TimePoint
-                    });
-
-
-                wrappers.Add(wrap);
-            }
-
-            
-            return wrappers;
+            return dbContext.NexaDeviceObject.Find(deviceId);
+        }
+        
+        public NexaDevice GetNexaDevice(int deviceId)
+        {
+            NexaDevice device = dbContext.NexaDeviceObject.Find(deviceId);
+            return device;
         }
 
+        
         public void DeleteDevice(NexaDevice nexaDevice)
         {
             dbContext.NexaDeviceObject.Remove(nexaDevice);
             int n = dbContext.SaveChanges();
         }
 
-        public List<DeviceWrapper> GetAllConfiguration
-        {
-            get
-            {
-                List<DeviceWrapper> wrappers = new List<DeviceWrapper>();
-                foreach (DBDevice d in dbContext.devices)
-                {
-
-                    
-
-                    var selection = dbContext.timeschema.Where(p => p.DeviceId == d.deviceID);
-                    int n = dbContext.timeschema.Count();
-
-                    foreach (DBSchema schema in selection)
-                    {
-                        
-                        DeviceWrapper wrap = new DeviceWrapper
-                            (
-                            new Schema
-                            (
-                                new NexaDevice()
-                                {
-                                    DeviceId = d.deviceID,
-                                    DeviceType = d.DeviceType,
-                                    DeviceName = d.DeviceName
-                                }
-                                )
-                            {
-                                WeekDay = schema.DayOfWeek,
-                                ActionText = schema.Action.ToString(),
-                                TimePoint = schema.TimePoint
-                            });
-
-                        wrappers.Add(wrap);
-                    }
-                }
-
-                return wrappers;
-            }
-        }
+        
 
         public void SaveSchemaForDevice(Schema schema)
         {
@@ -167,7 +89,15 @@ namespace Nexa.ViewModels
         {
             get
             {
-                return dbContext.NexaDeviceObject.ToList();
+                try
+                {
+                    return dbContext.NexaDeviceObject.ToList();
+                }
+                catch (Exception ep)
+                {
+
+                    return null;
+                }
             }
         }
 
@@ -184,39 +114,32 @@ namespace Nexa.ViewModels
             }
         }
 
-        public List<DeviceWrapper> AllItems
-        {
-            get
-            {
-                return GetAllFakeItems();
-            }
-        }
+     
+        //private List<DeviceWrapper> GetAllFakeItems()
+        //{
+        //    List<DeviceWrapper> wrapper = new List<DeviceWrapper>();
 
-        private List<DeviceWrapper> GetAllFakeItems()
-        {
-            List<DeviceWrapper> wrapper = new List<DeviceWrapper>();
+        //    List<NexaDevice> someDevices = GetDevices();
 
-            List<NexaDevice> someDevices = GetDevices();
+        //    int n = 1;
+        //    foreach (NexaDevice d in someDevices)
+        //    {
+        //        Schema schema = null;
+        //        if (n % 2 == 0)
+        //            schema = new Schema(d) { ActionText = "ON", TimePoint = DateTime.Now.Add(new TimeSpan(1, 1, 1, 1, 1)), WeekDay = 1 };
+        //        else
+        //            schema = new Schema(d) { ActionText = "OFF", TimePoint = DateTime.Now.Add(new TimeSpan(-1, 1, -1, 1, -1)), WeekDay = 2 };
 
-            int n = 1;
-            foreach (NexaDevice d in someDevices)
-            {
-                Schema schema = null;
-                if (n % 2 == 0)
-                    schema = new Schema(d) { ActionText = "ON", TimePoint = DateTime.Now.Add(new TimeSpan(1, 1, 1, 1, 1)), WeekDay = 1 };
-                else
-                    schema = new Schema(d) { ActionText = "OFF", TimePoint = DateTime.Now.Add(new TimeSpan(-1, 1, -1, 1, -1)), WeekDay = 2 };
+        //        DeviceWrapper wrp = new DeviceWrapper(schema);
 
-                DeviceWrapper wrp = new DeviceWrapper(schema);
-
-                wrapper.Add(wrp);
-                n++;
-            }
+        //        wrapper.Add(wrp);
+        //        n++;
+        //    }
 
 
 
-            return wrapper;
-        }
+        //    return wrapper;
+        //}
 
         private List<NexaDevice> GetDevices()
         {
