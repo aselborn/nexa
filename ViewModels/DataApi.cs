@@ -64,7 +64,31 @@ namespace Nexa.ViewModels
 
         public void SaveNexaTimeschema(NexaTimeSchema schema)
         {
+            dbContext.NexaTimeSchema.Add(schema);
+            dbContext.SaveChanges();
+        }
 
+        public NexaTimeSchema UpdateNexaTimeschema(NexaTimeSchema schema)
+        {
+            NexaTimeSchema item = dbContext.NexaTimeSchema.SingleOrDefault(p => p.Id == schema.Id);
+            if (item != null)
+            {
+                item.TimePoint = schema.TimePoint;
+                item.UpdatedAt = DateTime.Now;
+                item.Dayofweek = schema.Dayofweek;
+                item.Action = schema.Action;
+
+                dbContext.SaveChanges();
+
+            }
+
+            return item;
+        }
+
+        public bool DeleteTimeSchema(NexaTimeSchema item)
+        {
+            dbContext.NexaTimeSchema.Remove(item);
+            return dbContext.SaveChanges() == 1 ? true : false; ;
         }
 
         public void SaveNewDevice(NexaDevice device)

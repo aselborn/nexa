@@ -127,10 +127,16 @@
                 
                 <TextBlock Width="60" VerticalAlignment="Center" Margin="5,0,0,0">Händelse:</TextBlock>
                 <ComboBox x:Name="cboEvent" Margin="5,0,0,0" 
+                          
+                          ItemsSource="{Binding Path=ActionCollection}"
                           SelectedIndex="{Binding SelectedAction}"
-                          SelectedItem="{Binding SelectedAction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                    <ComboBoxItem Content="PÅ" IsSelected="True" />
-                    <ComboBoxItem Content="AV" />
+                          DisplayMemberPath="{Binding Path=ActionCollection.ActionText}"
+                          IsSynchronizedWithCurrentItem="True"
+                          >
+                    
+                    <!--<ComboBoxItem Content="AV" IsSelected="True" />
+                    SelectedItem="{Binding SelectedAction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    <ComboBoxItem Content="PÅ" />-->
                 </ComboBox>
 
                 <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">Tidpunkt:</TextBlock>
@@ -143,7 +149,7 @@
                 <Button Command="{Binding SaveSchema}" 
                         IsEnabled="{Binding IsSaveEnabled}"
                         Margin="5,0,0,0" Width="50"
-                        Content="Spara" >
+                        Content="{Binding SaveUpdateText}" >
                 </Button>
 
                 <Button Command="{Binding PrepareNew}"
@@ -163,7 +169,7 @@
         <!--ItemsSource="{Binding MyDeviceWrapper}"-->
         <DataGrid 
             ItemsSource="{Binding NexaTimeschemas }"
-            SelectedItem="{Binding SelectedNexaDevice}"
+            SelectedItem="{Binding SelectedNexaTimeschema }"
             Grid.Row="3"
             AutoGenerateColumns="False">
 
@@ -173,6 +179,29 @@
                 <DataGridTextColumn Header="Tidpunkt" Binding="{Binding TimePointAsString}" />
 
             </DataGrid.Columns>
+
+
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Remove record" 
+                              CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"
+                              Command="{Binding DeleteTimeSchema}">
+
+                        <MenuItem.Style>
+                            <Style TargetType="{x:Type MenuItem}">
+                                <Setter Property="IsEnabled" Value="False"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems.Count}" Value="1">
+                                        <Setter Property="IsEnabled" Value="True"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </MenuItem.Style>
+                    
+                    </MenuItem>
+                    
+                </ContextMenu>
+            </DataGrid.ContextMenu>
 
         </DataGrid>
 

@@ -15,17 +15,25 @@ namespace Nexa.ViewModels
 
     class MainWindowViewModel : ViewModelBase
     {
+       
         private DataApi _dataApi = new DataApi();
         
         public ObservableCollection<NexaDevice> Devices { get; } = new ObservableCollection<NexaDevice>();
+
         public ObservableCollection<WeekDays> WeekDaysCollection { get; } = new ObservableCollection<WeekDays>();
+        public ObservableCollection<ActionsText> ActionCollection { get; } = new ObservableCollection<ActionsText>();
+
 
         public ObservableCollection<NexaTimeSchema> NexaTimeschemas { get; set; } = new ObservableCollection<NexaTimeSchema>();
+
+        
 
         private Boolean _isAllowed;
         private Boolean _isSaveEnabled ;
         private Boolean _isNewEnabled;
         private Boolean _isDeleteEnabled;
+        private string  _saveUpdateText;
+
         public MainWindowViewModel()
         {
             _dataApi.GetDbDevices.ForEach(Devices.Add);
@@ -33,6 +41,11 @@ namespace Nexa.ViewModels
             {
                 WeekDaysCollection.Add(new ViewModels.WeekDays() { NameOfWeekDay = WeekDayName(n), WeekDayId = n });
             }
+
+            ActionCollection.Add(new ActionsText() { Action = 0, ActionText = "AV" });
+            ActionCollection.Add(new ActionsText() { Action = 1, ActionText = "PÅ" });
+
+            SaveUpdateText = "Spara";
         }
 
 
@@ -42,6 +55,21 @@ namespace Nexa.ViewModels
 
         public ICommand DeleteDevice => new RelayCommand(p => DoDelete(p), p => IsDeleteEnabled);
         public ICommand ExitApplication => new RelayCommand(p => DoExit(), p => true);
+        public ICommand DeleteTimeSchema => new RelayCommand(v => DoDeleteTimeSchema(v),v=> IsDeleteEnabled);
+
+        private void DoDeleteTimeSchema(object v)
+        {
+            NexaTimeSchema item = (NexaTimeSchema)v;
+
+            if (_dataApi.DeleteTimeSchema(item))
+            {
+                SelectedDevice.timeschemas.Remove(item);
+                
+            }
+
+        }
+
+        
 
         private void DoExit()
         {
@@ -56,23 +84,40 @@ namespace Nexa.ViewModels
 
         private void DoPrepareNew()
         {
-
+            TextBoxTimePoint = "";
+            SaveUpdateText = "Spara";
+            IsSaveEnabled = true;
+            
         }
 
         private void DoSaveNewSchema()
         {
 
-            Schema schema = new Schema(_selectedDevice);
-            schema.ActionText = _selectedAction.ToString();
-            schema.TimePoint = DateTime.Parse(_TextBoxTimePoint);
-            schema.WeekDay = _selWeekDay.WeekDayId;
+            NexaTimeSchema timeSchema = new NexaTimeSchema();
+            timeSchema.Action = _selectedAction;
+            timeSchema.Dayofweek = _selectedWeekIndex + 1;
+            timeSchema.DeviceId = _selectedDevice.DeviceId;
+            timeSchema.TimePoint = DateTime.Parse(TextBoxTimePoint);
 
             
+            if (SaveUpdateText.CompareTo("Save") == 0)
+            {
+                _dataApi.SaveNexaTimeschema(timeSchema);
+                TextBoxTimePoint = string.Empty;
+                IsSaveEnabled = false;
+            }
+            else
+            {
+                if (_selectedDevice != null)
+                {
+                    timeSchema.Id = _selectedNexaTimeschema.Id;
+                    SelectedNexaTimeschema = _dataApi.UpdateNexaTimeschema(timeSchema);
 
-            _dataApi.SaveSchemaForDevice(schema);
-
-            TextBoxTimePoint = string.Empty;
-
+                    NexaTimeschemas.Clear();
+                    _selectedDevice.timeschemas.ToList().ForEach(NexaTimeschemas.Add);
+                }
+                
+            }
         }
 
         private void DoSaveNewDevice()
@@ -177,47 +222,55 @@ namespace Nexa.ViewModels
 
                 _selectedDevice = value == null ? _selectedDevice : value;
                 NotifyPropertyChanged(nameof(SelectedDevice));
+                NexaTimeschemas.Clear();
 
-                _selectedDevice.timeschemas.ToList().ForEach(NexaTimeschemas.Add);
+                IsDeleteEnabled = false;
 
-               
+                if (_selectedDevice.timeschemas != null)
+                {
+                    _selectedDevice.timeschemas.ToList().ForEach(NexaTimeschemas.Add);
+                    IsDeleteEnabled = true;
+                }
+                    
                 
                 IsNewEnabled = true;
-                //IsDeleteEnabled = forThisDevice.Count > 0 ? false : true;
+                
             }
         }
 
 
 
-        private NexaDevice _selectedNexaDevice;
-        public NexaDevice SelectedNexaDevice
+        private NexaTimeSchema _selectedNexaTimeschema;
+        public NexaTimeSchema SelectedNexaTimeschema
         {
-            get => _selectedNexaDevice;
+            get => _selectedNexaTimeschema;
             set
             {
-                _selectedNexaDevice = value == null ? _selectedNexaDevice : value;
-                NotifyPropertyChanged(nameof(SelectedNexaDevice));
+                _selectedNexaTimeschema = value == null ? _selectedNexaTimeschema : value;
+                NotifyPropertyChanged(nameof(SelectedNexaTimeschema));
 
                 
                 ViewInformation();
+
+                SaveUpdateText = "Update";
 
             }
         }
 
         private void ViewInformation()
         {
-            
-            //SelWeekDay = new ViewModels.WeekDays()
-            //{
-            //    WeekDayId = _selectedWrapperSchema.WeekDay, NameOfWeekDay = WeekDayName(_selectedWrapperSchema.WeekDay)
-            //};
 
-            //SelectedWeekIndex = _selectedWrapperSchema.WeekDay - 1;
-            //SelectedAction = _selectedWrapperSchema.ActionText == "PÅ" ? "0" : "1";
-            ////SelectedAction = _selectedWrapperSchema.ActionText;
-            //TextBoxTimePoint = _selectedWrapperSchema.TimePointAsString;
-            
-            //IsSaveEnabled = true;
+            SelWeekDay = new ViewModels.WeekDays()
+            {
+                WeekDayId = _selectedNexaTimeschema.Dayofweek,
+                NameOfWeekDay = WeekDayName(_selectedNexaTimeschema.Dayofweek)
+            };
+
+            SelectedWeekIndex = _selectedNexaTimeschema.Dayofweek - 1;
+            SelectedAction = _selectedNexaTimeschema.Action;
+            TextBoxTimePoint = _selectedNexaTimeschema.TimePointAsString;
+
+            IsSaveEnabled = true;
 
         }
 
@@ -261,9 +314,8 @@ namespace Nexa.ViewModels
             }
         }
 
-        private string _selectedAction;
-
-        public string SelectedAction
+        private int _selectedAction;
+        public int SelectedAction
         {
             get =>_selectedAction; 
             set
@@ -273,5 +325,16 @@ namespace Nexa.ViewModels
             }
         }
 
+        public string SaveUpdateText
+        {
+            get => _saveUpdateText;
+            set
+            {
+                _saveUpdateText = value;
+                NotifyPropertyChanged(nameof(SaveUpdateText));
+            }
+        }
+
+        
     }
 }
