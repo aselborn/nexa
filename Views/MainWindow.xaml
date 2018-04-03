@@ -141,7 +141,7 @@
 
                 <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">Tidpunkt:</TextBlock>
                 <TextBox x:Name="txtTimePoint" MaxLength="5"
-                         Text="{Binding TextBoxTimePoint}"  
+                         Text="{Binding TextBoxTimePoint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  
                          Width="40" Margin="5,0,0,0">
 
                 </TextBox>

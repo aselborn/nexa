@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -61,12 +62,12 @@ namespace Nexa.ViewModels
         {
             NexaTimeSchema item = (NexaTimeSchema)v;
 
+            SelectedDevice.timeschemas.Remove(item);
             if (_dataApi.DeleteTimeSchema(item))
             {
-                SelectedDevice.timeschemas.Remove(item);
                 
             }
-
+            
         }
 
         
@@ -80,13 +81,16 @@ namespace Nexa.ViewModels
         {
             _dataApi.DeleteDevice((NexaDevice)x);
             Devices.Remove((NexaDevice)x);
+
+
+
         }
 
         private void DoPrepareNew()
         {
             TextBoxTimePoint = "";
             SaveUpdateText = "Spara";
-            IsSaveEnabled = true;
+            IsSaveEnabled = false;
             
         }
 
@@ -99,8 +103,8 @@ namespace Nexa.ViewModels
             timeSchema.DeviceId = _selectedDevice.DeviceId;
             timeSchema.TimePoint = DateTime.Parse(TextBoxTimePoint);
 
-            
-            if (SaveUpdateText.CompareTo("Save") == 0)
+            //This has to be unhacked!
+            if (SaveUpdateText.CompareTo("Spara") == 0)
             {
                 _dataApi.SaveNexaTimeschema(timeSchema);
                 TextBoxTimePoint = string.Empty;
@@ -186,7 +190,19 @@ namespace Nexa.ViewModels
             {
                 _TextBoxTimePoint = value;
                 NotifyPropertyChanged(nameof(TextBoxTimePoint));
+
+                if (_TextBoxTimePoint.Length == 5)
+                {
+                    IsSaveEnabled = isValidTime(_TextBoxTimePoint) ? true : false;
+                }
+                
             }
+        }
+
+        private bool isValidTime(string inputTime)
+        {
+            Regex chkTime = new Regex(@"^(?:0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$");
+            return chkTime.IsMatch(inputTime);
         }
 
         private string _TextBoxDeviceName;
@@ -247,6 +263,7 @@ namespace Nexa.ViewModels
             set
             {
                 _selectedNexaTimeschema = value == null ? _selectedNexaTimeschema : value;
+                IsSaveEnabled = value != null ? true : false;
                 NotifyPropertyChanged(nameof(SelectedNexaTimeschema));
 
                 
