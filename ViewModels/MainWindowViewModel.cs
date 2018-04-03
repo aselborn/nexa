@@ -1,5 +1,6 @@
 ﻿using Nexa.library;
 using Nexa.Models;
+using Nexa.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -57,6 +58,22 @@ namespace Nexa.ViewModels
         public ICommand DeleteDevice => new RelayCommand(p => DoDelete(p), p => IsDeleteEnabled);
         public ICommand ExitApplication => new RelayCommand(p => DoExit(), p => true);
         public ICommand DeleteTimeSchema => new RelayCommand(v => DoDeleteTimeSchema(v),v=> IsDeleteEnabled);
+        public ICommand WriteConfigFile => new RelayCommand(z => DoWriteConfigurationFile(), z => true);
+        public ICommand ShowSettingsWindow => new RelayCommand(_ => DoShowSettings(), _ => true);
+
+        private void DoShowSettings()
+        {
+            SettingsWindow settingsWindow = new SettingsWindow();
+            settingsWindow.Show();
+            
+                
+            
+        }
+
+        private void DoWriteConfigurationFile()
+        {
+            _dataApi.WriteConfig();
+        }
 
         private void DoDeleteTimeSchema(object v)
         {
@@ -65,12 +82,10 @@ namespace Nexa.ViewModels
             SelectedDevice.timeschemas.Remove(item);
             if (_dataApi.DeleteTimeSchema(item))
             {
-                
-            }
-            
+                Devices.Clear();
+                _dataApi.GetDbDevices.ForEach(Devices.Add);
+            }            
         }
-
-        
 
         private void DoExit()
         {
@@ -81,9 +96,6 @@ namespace Nexa.ViewModels
         {
             _dataApi.DeleteDevice((NexaDevice)x);
             Devices.Remove((NexaDevice)x);
-
-
-
         }
 
         private void DoPrepareNew()
@@ -109,6 +121,10 @@ namespace Nexa.ViewModels
                 _dataApi.SaveNexaTimeschema(timeSchema);
                 TextBoxTimePoint = string.Empty;
                 IsSaveEnabled = false;
+
+                Devices.Clear();
+                _dataApi.GetDbDevices.ForEach(Devices.Add);
+
             }
             else
             {
@@ -118,7 +134,7 @@ namespace Nexa.ViewModels
                     SelectedNexaTimeschema = _dataApi.UpdateNexaTimeschema(timeSchema);
 
                     NexaTimeschemas.Clear();
-                    _selectedDevice.timeschemas.ToList().ForEach(NexaTimeschemas.Add);
+                    _selectedDevice.timeschemas.OrderBy(z=>z.TimePoint).ToList().ForEach(NexaTimeschemas.Add);
                 }
                 
             }
@@ -244,7 +260,8 @@ namespace Nexa.ViewModels
 
                 if (_selectedDevice.timeschemas != null)
                 {
-                    _selectedDevice.timeschemas.ToList().ForEach(NexaTimeschemas.Add);
+                    //_selectedDevice.timeschemas.ToList().ForEach(NexaTimeschemas.Add);
+                    _selectedDevice.timeschemas.OrderBy(p => p.TimePoint).ToList().ForEach(NexaTimeschemas.Add);
                     IsDeleteEnabled = true;
                 }
                     

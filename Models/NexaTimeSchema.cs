@@ -81,6 +81,6 @@ namespace Nexa.Models
 
         public string WeekDayAsText => Enum.GetName(typeof(EnumDayOfWeek), (Dayofweek - 1));
         public string ActionText => Action == 1 ? "PÅ" : "AV";
-        public string TimePointAsString => $"{TimePoint:hh:mm}";
+        public string TimePointAsString => $"{TimePoint:HH:mm}";
     }
 }

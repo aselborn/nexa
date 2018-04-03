@@ -6,14 +6,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Nexa.Models 
 {
+    [Serializable]
+    [XmlRoot(ElementName ="NEXADEVICE")]
     [Table("NexaDevice")]
     public class NexaDevice : ViewModelBase
     {
        
         private int _deviceId;
+        [XmlElement]
         [Key]
         public int DeviceId
         {
@@ -25,6 +29,7 @@ namespace Nexa.Models
             }
         }
 
+        [XmlElement]
         private string _deviceName;
         public string DeviceName
         {
@@ -35,6 +40,8 @@ namespace Nexa.Models
                 NotifyPropertyChanged(nameof(DeviceName));
             }
         }
+
+        [XmlElement]
         private string _deviceType;
         public string DeviceType
         {
@@ -46,6 +53,7 @@ namespace Nexa.Models
             }
         }
  
+        
         public virtual ICollection<NexaTimeSchema> timeschemas { get; set; }
         
     }

@@ -20,6 +20,14 @@
 
     </Window.Resources>
 
+    
+    <metro:MetroWindow.InputBindings>
+
+        <KeyBinding Key="F2" Command="{Binding ShowSettingsWindow}" />
+        
+        
+    </metro:MetroWindow.InputBindings>
+    
     <Grid>
         <Grid.Resources>
             <ObjectDataProvider x:Key="EnumDayOfWeek" MethodName="GetValues"
@@ -208,7 +216,9 @@
 
         <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="2" >
             <Button Grid.Row="4" Width="100" 
-                    x:Name="btnWriteConfig">Write Config
+                    Command="{Binding WriteConfigFile}"
+                    Content="Write Config"
+                    x:Name="btnWriteConfig">
             </Button>
             <Button Grid.Row="4" 
                     Margin="20,0,0,0"
