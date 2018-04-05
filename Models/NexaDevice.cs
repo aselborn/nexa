@@ -10,8 +10,7 @@ using System.Xml.Serialization;
 
 namespace Nexa.Models 
 {
-    [Serializable]
-    [XmlRoot(ElementName ="NEXADEVICE")]
+    
     [Table("NexaDevice")]
     public class NexaDevice : ViewModelBase
     {
@@ -29,7 +28,6 @@ namespace Nexa.Models
             }
         }
 
-        [XmlElement]
         private string _deviceName;
         public string DeviceName
         {

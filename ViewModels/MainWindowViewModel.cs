@@ -2,6 +2,7 @@
 using Nexa.Models;
 using Nexa.Views;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -34,6 +35,7 @@ namespace Nexa.ViewModels
         private Boolean _isSaveEnabled ;
         private Boolean _isNewEnabled;
         private Boolean _isDeleteEnabled;
+        private Boolean _isDeleteRecordEnabled;
         private string  _saveUpdateText;
 
         public MainWindowViewModel()
@@ -57,17 +59,35 @@ namespace Nexa.ViewModels
 
         public ICommand DeleteDevice => new RelayCommand(p => DoDelete(p), p => IsDeleteEnabled);
         public ICommand ExitApplication => new RelayCommand(p => DoExit(), p => true);
-        public ICommand DeleteTimeSchema => new RelayCommand(v => DoDeleteTimeSchema(v),v=> IsDeleteEnabled);
+        public ICommand DeleteTimeSchema => new RelayCommand(v => DoDeleteTimeSchema(v),v=> IsDeleteTimeschemaEnabled);
         public ICommand WriteConfigFile => new RelayCommand(z => DoWriteConfigurationFile(), z => true);
         public ICommand ShowSettingsWindow => new RelayCommand(_ => DoShowSettings(), _ => true);
+
+        public ICommand RemoveMulipleTimeschemas => new RelayCommand(DoRemoveMulpleSchemas, c => true);
+
+        private void DoRemoveMulpleSchemas(object ItemsInList)
+        {
+            var selectedItems = (IList)ItemsInList;
+            List<NexaTimeSchema> selectedDevices = selectedItems.Cast<NexaTimeSchema>().ToList();
+
+            foreach (NexaTimeSchema schema in selectedDevices)
+            {
+                _dataApi.DeleteTimeSchema(schema);
+            }
+
+            ClearAndFillDevices();
+        }
+
+        private void ClearAndFillDevices()
+        {
+            Devices.Clear();
+            _dataApi.GetDbDevices.ForEach(Devices.Add);
+        }
 
         private void DoShowSettings()
         {
             SettingsWindow settingsWindow = new SettingsWindow();
-            settingsWindow.Show();
-            
-                
-            
+            settingsWindow.Show();   
         }
 
         private void DoWriteConfigurationFile()
@@ -78,12 +98,11 @@ namespace Nexa.ViewModels
         private void DoDeleteTimeSchema(object v)
         {
             NexaTimeSchema item = (NexaTimeSchema)v;
-
             SelectedDevice.timeschemas.Remove(item);
+
             if (_dataApi.DeleteTimeSchema(item))
             {
-                Devices.Clear();
-                _dataApi.GetDbDevices.ForEach(Devices.Add);
+                ClearAndFillDevices();
             }            
         }
 
@@ -122,8 +141,7 @@ namespace Nexa.ViewModels
                 TextBoxTimePoint = string.Empty;
                 IsSaveEnabled = false;
 
-                Devices.Clear();
-                _dataApi.GetDbDevices.ForEach(Devices.Add);
+                ClearAndFillDevices();
 
             }
             else
@@ -155,7 +173,7 @@ namespace Nexa.ViewModels
             
 
         }
-
+        
         public bool IsAllowed
         {
             get => _isAllowed;
@@ -186,7 +204,15 @@ namespace Nexa.ViewModels
             }
         }
             
-
+        public Boolean IsDeleteTimeschemaEnabled
+        {
+            get => _isDeleteRecordEnabled;
+            set
+            {
+                _isDeleteRecordEnabled = value;
+                NotifyPropertyChanged(nameof(IsDeleteTimeschemaEnabled));
+            }
+        }
 
         public bool IsSaveEnabled
         {
@@ -256,14 +282,18 @@ namespace Nexa.ViewModels
                 NotifyPropertyChanged(nameof(SelectedDevice));
                 NexaTimeschemas.Clear();
 
-                IsDeleteEnabled = false;
-
+                IsDeleteEnabled = true;
+                
                 if (_selectedDevice.timeschemas != null)
                 {
                     //_selectedDevice.timeschemas.ToList().ForEach(NexaTimeschemas.Add);
                     _selectedDevice.timeschemas.OrderBy(p => p.TimePoint).ToList().ForEach(NexaTimeschemas.Add);
-                    IsDeleteEnabled = true;
+                    IsDeleteEnabled = false;
+
+                    IsDeleteEnabled = _selectedDevice.timeschemas.Count == 0 ? true : false;
+                    IsDeleteTimeschemaEnabled= _selectedDevice.timeschemas.Count > 0 ? true : false;
                 }
+                
                     
                 
                 IsNewEnabled = true;
@@ -305,6 +335,7 @@ namespace Nexa.ViewModels
             TextBoxTimePoint = _selectedNexaTimeschema.TimePointAsString;
 
             IsSaveEnabled = true;
+            IsDeleteTimeschemaEnabled = true;
 
         }
 

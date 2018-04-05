@@ -23,10 +23,7 @@ namespace Nexa.Models
             base.OnModelCreating(modelBuilder);
         }
 
-        public DbSet<DBDevice> devices { get;set;}
-        public DbSet<DBSchema> timeschema { get; set; }
-        public DbSet<Person> personObject { get; set; }
-
+        
         public DbSet<NexaDevice> NexaDeviceObject { get; set; }
         public DbSet<NexaTimeSchema> NexaTimeSchema { get; set; }
     }

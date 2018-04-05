@@ -48,7 +48,7 @@
         <StackPanel Grid.Row="0" Margin="5">
             <StackPanel Margin="5">
                 <StackPanel Orientation="Horizontal" Margin="5">
-                    <TextBlock Width="100" VerticalAlignment="Center">Nexa Device:</TextBlock>
+                    <TextBlock Width="100" VerticalAlignment="Center">Nexa Enhet:</TextBlock>
                     
                     <TextBox Width="200" Name="txtDeviceName" 
                              Text="{Binding TextBoxDeviceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
@@ -76,8 +76,8 @@
             <ListView.View>
 
                 <GridView>
-                    <GridViewColumn Header="Device" Width="150" DisplayMemberBinding="{Binding DeviceName}"></GridViewColumn>
-                    <GridViewColumn Header="Device beskrivning" Width="500"
+                    <GridViewColumn Header="Enhet" Width="150" DisplayMemberBinding="{Binding DeviceName}"></GridViewColumn>
+                    <GridViewColumn Header="Enhet beskrivning" Width="500"
                                     DisplayMemberBinding="{Binding DeviceType}">
                     </GridViewColumn>
 
@@ -175,13 +175,21 @@
         </StackPanel>
 
         <!--ItemsSource="{Binding MyDeviceWrapper}"-->
-        <DataGrid 
+        <DataGrid
             ItemsSource="{Binding NexaTimeschemas }"
-            SelectedItem="{Binding SelectedNexaTimeschema }"
+            SelectedItem="{Binding SelectedNexaTimeschema, Mode=TwoWay}"
+            SelectionMode="Extended"
+            CanUserAddRows="False"
             Grid.Row="3"
             AutoGenerateColumns="False">
 
+            <DataGrid.ItemContainerStyle>
+                <Style TargetType="{x:Type DataGridRow}">
+                    <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=IsSelected}" />
+                </Style>
+            </DataGrid.ItemContainerStyle>
             <DataGrid.Columns>
+                
                 <DataGridTextColumn Header="Veckodag" Binding="{Binding WeekDayAsText}" />
                 <DataGridTextColumn Header="Händlelse" Binding="{Binding ActionText}" />
                 <DataGridTextColumn Header="Tidpunkt" Binding="{Binding TimePointAsString}" />
@@ -207,7 +215,13 @@
                         </MenuItem.Style>
                     
                     </MenuItem>
-                    
+
+                    <Separator />
+
+                    <MenuItem Header="Remove multiple records" Command="{Binding RemoveMulipleTimeschemas}" 
+                              CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItems}" />
+
+
                 </ContextMenu>
             </DataGrid.ContextMenu>
 

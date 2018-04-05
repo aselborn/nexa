@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -38,33 +39,7 @@ namespace Nexa.ViewModels
 
 
 
-        public void SaveSchemaForDevice(Schema schema)
-        {
-            try
-            {
-                DBSchema dBSchema = new DBSchema() { Action = schema.ActionText == "ON" ? 1 : 0, DayOfWeek = schema.WeekDay, DeviceId = schema.Device.DeviceId, TimePoint = schema.TimePoint };
-
-                NexaTimeSchema timeSchema = new NexaTimeSchema()
-                {
-                    Action = schema.ActionText == "ON" ? 1 : 0,
-                    DeviceId = schema.Device.DeviceId,
-                    Dayofweek = schema.WeekDay,
-                    TimePoint = schema.TimePoint,
-                    UpdatedAt = DateTime.Now
-                };
-
-                dbContext.NexaTimeSchema.Add(timeSchema);
-
-
-                int row = dbContext.SaveChanges();
-
-            }
-            catch (Exception ep)
-            {
-                Exception exception = ep;
-            }
-        }
-
+        
         public void SaveNexaTimeschema(NexaTimeSchema schema)
         {
             dbContext.NexaTimeSchema.Add(schema);
@@ -92,16 +67,18 @@ namespace Nexa.ViewModels
         {
             List<NexaDevice> devices = dbContext.NexaDeviceObject.ToList();
 
-            var ser = new XmlSerializer(typeof(NexaDevice));
+            NexaDevice aDevice = devices[0];
 
-            NexaDevice nexaDevice = devices[0];
+            XmlWriterSettings writerSettings = new XmlWriterSettings();
+            writerSettings.Encoding = UTF8Encoding.Default;
+            writerSettings.WriteEndDocumentOnClose = true;
+            writerSettings.Indent = true;
 
-            StringBuilder bu = new StringBuilder();
-            StringWriter wr = new StringWriter(bu);
-
-            ser.Serialize(wr, nexaDevice);
-
-            string result = wr.GetStringBuilder().ToString();
+            using(XmlWriter writer = XmlWriter.Create("Result.xml", writerSettings))
+            {
+                DataContractSerializer dataContractSerializer = new DataContractSerializer(devices.GetType());
+                dataContractSerializer.WriteObject(writer, aDevice);
+            }
 
 
         }
@@ -109,7 +86,6 @@ namespace Nexa.ViewModels
         public bool DeleteTimeSchema(NexaTimeSchema item)
         {
             dbContext.NexaTimeSchema.Remove(item);
-
             return dbContext.SaveChanges() == 1 ? true : false; ;
         }
 

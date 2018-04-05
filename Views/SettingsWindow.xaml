@@ -8,20 +8,29 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        Title="Settings" Height="300" Width="300">
+        xmlns:vm="clr-namespace:Nexa.ViewModels"
+        WindowStartupLocation="CenterOwner" 
+        
+        Title="Settings" Height="300" Width="300" ResizeMode="NoResize">
+
+    <Window.DataContext>
+        <vm:SettingsWindowViewModel />
+    </Window.DataContext>
+
+    
     
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="20" />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
-        
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0" Grid.Row="0" Height="20" Orientation="Horizontal">
+        <StackPanel Grid.Column="0" Grid.Row="0" Height="20" Orientation="Horizontal" Margin="0,5,5,0">
             <TextBlock Text="Telldus engine:"></TextBlock>
             <TextBox Name="txtTelldusAddress"
                      Width="200"
@@ -29,14 +38,21 @@
                      Text="{Binding RaspberryAddress}" />
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="3" HorizontalAlignment="Right">
-            <Button x:Name="btnCancel" Content="Cancel" />
+        <StackPanel Orientation="Horizontal" Grid.Row="3" 
+                    
+                    HorizontalAlignment="Right">
+            <Button x:Name="btnCancel" Content="Cancel" 
+                    Command="{ Binding CloseSettings }" Click="btnCancel_Click">
+
+             
+                
+            </Button>
 
             <Button x:Name="btnSave" Command="{Binding SaveSettings}"
                     Content="Save"
                     Margin="5,0,0,0" />
 
         </StackPanel>
-        
+
     </Grid>
 </Controls:MetroWindow>
