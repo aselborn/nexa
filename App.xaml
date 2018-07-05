@@ -17,6 +17,10 @@
              /MahApps.Metro;component/Styles/Accents/crimson.xaml" />
                 <ResourceDictionary Source="pack://application:,,,
              /MahApps.Metro;component/Styles/Accents/baselight.xaml" />
+
+                <ResourceDictionary Source="Resources\SharedStyles.xaml" />
+                <ResourceDictionary Source="Resources\language.xaml" />
+
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
 

@@ -67,6 +67,12 @@ namespace Nexa.ViewModels
         {
             List<NexaDevice> devices = dbContext.NexaDeviceObject.ToList();
 
+            List<DeviceObject> deviceObject = new List<DeviceObject>();
+            foreach (NexaDevice device in devices)
+            {
+                deviceObject.Add(new DeviceObject() { Comment = device.DeviceType, DeviceId = device.DeviceId, DeviceName = device.DeviceName });
+            }
+
             NexaDevice aDevice = devices[0];
 
             XmlWriterSettings writerSettings = new XmlWriterSettings();
@@ -74,11 +80,22 @@ namespace Nexa.ViewModels
             writerSettings.WriteEndDocumentOnClose = true;
             writerSettings.Indent = true;
 
-            using(XmlWriter writer = XmlWriter.Create("Result.xml", writerSettings))
-            {
-                DataContractSerializer dataContractSerializer = new DataContractSerializer(devices.GetType());
-                dataContractSerializer.WriteObject(writer, aDevice);
-            }
+            MemoryStream ms = new MemoryStream();
+
+            DataContractSerializer serializer = new DataContractSerializer(typeof(DeviceObject));
+            XmlDictionaryWriter writer = XmlDictionaryWriter.CreateDictionaryWriter(XmlWriter.Create(ms));
+
+            serializer.WriteObject(writer, deviceObject, new MyCustomResolver());
+
+            writer.Flush();
+            ms.Position = 0;
+
+
+            //using(XmlWriter writer = XmlWriter.Create("Result.xml", writerSettings))
+            //{
+            //    DataContractSerializer dataContractSerializer = new DataContractSerializer(deviceObject.GetType());
+            //    dataContractSerializer.WriteObject(writer, aDevice);
+            //}
 
 
         }
@@ -153,6 +170,29 @@ namespace Nexa.ViewModels
             devices.Add(device4);
 
             return devices;
+        }
+    }
+
+    public class MyCustomResolver : DataContractResolver
+    {
+        public override Type ResolveName(string typeName, string typeNamespace, Type declaredType, DataContractResolver knownTypeResolver)
+        {
+            return typeof(DeviceObject);
+        }
+
+        public override bool TryResolveType(Type type, Type declaredType, DataContractResolver knownTypeResolver, out XmlDictionaryString typeName, out XmlDictionaryString typeNamespace)
+        {
+            if (type == typeof(DeviceObject))
+            {
+                XmlDictionary dictionary = new XmlDictionary();
+                typeName = dictionary.Add("Devices");
+                typeNamespace = dictionary.Add("http://tempuri.com");
+                return true;
+            }
+            else
+            {
+                return knownTypeResolver.TryResolveType(type, declaredType, null, out typeName, out typeNamespace);
+            }
         }
     }
 }

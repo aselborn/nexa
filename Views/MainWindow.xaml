@@ -9,6 +9,7 @@
         xmlns:models="clr-namespace:Nexa.Models"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
+        GlowBrush="AliceBlue"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
@@ -20,13 +21,87 @@
 
     </Window.Resources>
 
-    
-    <metro:MetroWindow.InputBindings>
 
+    <metro:MetroWindow.InputBindings>
         <KeyBinding Key="F2" Command="{Binding ShowSettingsWindow}" />
-        
-        
     </metro:MetroWindow.InputBindings>
+
+    <Controls:MetroWindow.Flyouts>
+        <Controls:FlyoutsControl>
+            <Controls:Flyout Header="{StaticResource FlyoutText}" IsOpen="{Binding SettingsOpen}" Style="{StaticResource FlyOutStyle}">
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10">
+                        <StackPanel.Resources>
+                            <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBox1}">
+                                <Setter Property="Margin" Value="8,5"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Style>
+                        </StackPanel.Resources>
+
+                        <CheckBox IsChecked="{Binding Path=Settings.MinimalisticMode}" Content="{StaticResource t_MinimalisticMode}" />
+                        <TextBlock Text="{StaticResource t_MinimalisticMode}" FontSize="10" Margin="40,0,0,0"></TextBlock>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{StaticResource t_Scale}" 
+                                       Margin="8,10,0,0"
+                                       Grid.Column ="0"  
+                                       HorizontalAlignment="Left" 
+                                       Style="{StaticResource Header3}">
+                            </TextBlock>
+
+                            <Slider Grid.Column="1"  
+                                    x:Name="scaleSlider" 
+                                    Maximum="4" 
+                                    Minimum="0.1" 
+                                    IsSnapToTickEnabled="True"
+                                    Style="{StaticResource SliderExtension}"
+                                    Cursor="Hand" 
+                                    Margin="10,12" 
+                                    TickFrequency="0.01"
+                                    SmallChange="0.01"
+                                    LargeChange="0.1"
+                                    HorizontalAlignment="Stretch"
+                                    Width="100"
+                                    Value="{Binding Path=Settings.Scale, UpdateSourceTrigger=PropertyChanged}"    
+                                    >
+                            </Slider>
+
+                            <TextBlock x:Name="sliderValue" Grid.Column="2" 
+                                       Height="22" 
+                                       TextAlignment="Right"  
+                                       Margin="5,0,0,0"
+                                       Foreground="White"
+                                       Style="{StaticResource Header3}"
+                                       Text="{Binding ElementName=scaleSlider, 
+                                                      Path=Value, 
+                                                      UpdateSourceTrigger=PropertyChanged, 
+                                                      StringFormat={}{0:P0}}"  />
+
+                            <Button Margin="5,0" Grid.Column="3" Height="20" Command="{Binding ResetScaleCommand}">Reset</Button>
+
+                        </Grid>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Controls:Flyout>
+
+            <Controls:Flyout Header="{StaticResource t_ApplicationTitle}" 
+                             IsOpen="{Binding AboutOpen }"
+                             Style="{StaticResource FlyOutStyle}">
+
+                <!--<ContentControl Content="{StaticResource AboutTemplate}" DataContext="{Binding AboutViewModel}"/>-->
+
+            </Controls:Flyout>
+                             
+        </Controls:FlyoutsControl>
+    </Controls:MetroWindow.Flyouts>
     
     <Grid>
         <Grid.Resources>
@@ -43,6 +118,7 @@
             <RowDefinition Height="150" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Margin="5">
@@ -190,9 +266,10 @@
             </DataGrid.ItemContainerStyle>
             <DataGrid.Columns>
                 
-                <DataGridTextColumn Header="Veckodag" Binding="{Binding WeekDayAsText}" />
-                <DataGridTextColumn Header="Händlelse" Binding="{Binding ActionText}" />
-                <DataGridTextColumn Header="Tidpunkt" Binding="{Binding TimePointAsString}" />
+                <DataGridTextColumn Header="Veckodag" Width="2*" Binding="{Binding WeekDayAsText}" />
+                <DataGridTextColumn Header="Av/På" Width="2*" Binding="{Binding ActionText}" />
+                <DataGridTextColumn Header="Tidpunkt" Width="2*" Binding="{Binding TimePointAsString}" />
+                <DataGridTextColumn Header="Slutförd" Width="2*" Binding="{Binding UpdatedAtAsString}" />
 
             </DataGrid.Columns>
 
@@ -225,10 +302,17 @@
                 </ContextMenu>
             </DataGrid.ContextMenu>
 
+
+            <DataGrid.InputBindings>
+                <!--<MouseBinding MouseAction="LeftDoubleClick"
+                              com-->
+            </DataGrid.InputBindings>
+            
         </DataGrid>
 
+        
 
-        <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="2" >
+        <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="2"  HorizontalAlignment="Right">
             <Button Grid.Row="4" Width="100" 
                     Command="{Binding WriteConfigFile}"
                     Content="Write Config"
@@ -240,7 +324,23 @@
                     Width="80" HorizontalAlignment="Right">Exit</Button>
             
         </StackPanel>
-        <!--<Button Grid.Row="4" Width="80" HorizontalAlignment="Right">Spara</Button>-->
+        
+        <StatusBar Grid.Row="5">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        
+                    </StackPanel>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <Separator Background="White" />
+            <StatusBarItem>
+                <TextBlock Text="{Binding TimeschemasCount}"/>
+            </StatusBarItem>
+            <Separator Background="White"/>
+            <StatusBarItem>
+            </StatusBarItem>
+        </StatusBar>
 
     </Grid>
 </Controls:MetroWindow>

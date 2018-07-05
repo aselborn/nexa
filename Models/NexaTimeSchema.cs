@@ -55,9 +55,9 @@ namespace Nexa.Models
                 NotifyPropertyChanged(nameof(Action));
             }
         }
-
-        private DateTime _updatedAt;
-        public DateTime UpdatedAt
+        
+        private DateTime? _updatedAt;
+        public DateTime? UpdatedAt
         {
             get => _updatedAt;
             set
@@ -82,5 +82,6 @@ namespace Nexa.Models
         public string WeekDayAsText => Enum.GetName(typeof(EnumDayOfWeek), (Dayofweek - 1));
         public string ActionText => Action == 1 ? "PÅ" : "AV";
         public string TimePointAsString => $"{TimePoint:HH:mm}";
+        public string UpdatedAtAsString => $"{UpdatedAt:HH:mm:ss}";
     }
 }

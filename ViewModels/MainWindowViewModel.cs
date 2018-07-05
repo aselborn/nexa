@@ -25,8 +25,6 @@ namespace Nexa.ViewModels
 
         public ObservableCollection<WeekDays> WeekDaysCollection { get; } = new ObservableCollection<WeekDays>();
         public ObservableCollection<ActionsText> ActionCollection { get; } = new ObservableCollection<ActionsText>();
-
-
         public ObservableCollection<NexaTimeSchema> NexaTimeschemas { get; set; } = new ObservableCollection<NexaTimeSchema>();
 
         
@@ -70,6 +68,8 @@ namespace Nexa.ViewModels
             var selectedItems = (IList)ItemsInList;
             List<NexaTimeSchema> selectedDevices = selectedItems.Cast<NexaTimeSchema>().ToList();
 
+            TimeschemasCount = selectedDevices.Count.ToString();
+
             foreach (NexaTimeSchema schema in selectedDevices)
             {
                 _dataApi.DeleteTimeSchema(schema);
@@ -87,7 +87,8 @@ namespace Nexa.ViewModels
         private void DoShowSettings()
         {
             SettingsWindow settingsWindow = new SettingsWindow();
-            settingsWindow.Show();   
+            settingsWindow.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+            settingsWindow.ShowDialog();
         }
 
         private void DoWriteConfigurationFile()
@@ -286,16 +287,15 @@ namespace Nexa.ViewModels
                 
                 if (_selectedDevice.timeschemas != null)
                 {
-                    //_selectedDevice.timeschemas.ToList().ForEach(NexaTimeschemas.Add);
-                    _selectedDevice.timeschemas.OrderBy(p => p.TimePoint).ToList().ForEach(NexaTimeschemas.Add);
+                    
+                    _selectedDevice.timeschemas.OrderBy(p => p.Dayofweek).ThenBy(x => x.TimePoint).ToList().ForEach(NexaTimeschemas.Add);
                     IsDeleteEnabled = false;
 
                     IsDeleteEnabled = _selectedDevice.timeschemas.Count == 0 ? true : false;
                     IsDeleteTimeschemaEnabled= _selectedDevice.timeschemas.Count > 0 ? true : false;
                 }
-                
-                    
-                
+
+                TimeschemasCount = _selectedDevice.timeschemas != null ? _selectedDevice.timeschemas.Count.ToString() : "";
                 IsNewEnabled = true;
                 
             }
@@ -400,6 +400,16 @@ namespace Nexa.ViewModels
             }
         }
 
+        private string _timeSchemasCount;
+        public string TimeschemasCount
+        {
+            get => _timeSchemasCount;
+            set
+            {
+                _timeSchemasCount = $"Configured count:  { value }";
+                NotifyPropertyChanged(nameof(TimeschemasCount));
+            }
+        }
         
     }
 }
