@@ -9,48 +9,105 @@
         xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:vm="clr-namespace:Nexa.ViewModels"
+        
         Title="Settings" Height="300" Width="300" ResizeMode="NoResize" Topmost="True">
 
-    <Window.DataContext>
-        <vm:SettingsWindowViewModel />
-    </Window.DataContext>
 
-    
-    
-    <Grid>
+    <Grid FocusManager.FocusedElement="{Binding ElementName=txtTelldus}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="35" />
+            <!--<RowDefinition Height="40" />-->
             <RowDefinition Height="*" />
-            <RowDefinition Height="30" />
+            <RowDefinition Height="50" />
         </Grid.RowDefinitions>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0" Grid.Row="0" Height="30" Orientation="Horizontal" Margin="5,0,5,0">
-            <TextBlock Text="Telldus engine:"></TextBlock>
-            <TextBox x:Name="txtTellduAddress"
-                     Width="200"
-                     Height="25"
-                     Text="{Binding RaspberryAddress}" Margin="10,0,0,8" />
-        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="0" Background="AliceBlue"
+                    Orientation="Vertical"
+                    VerticalAlignment="Stretch"
+                    Width="120"
+                    HorizontalAlignment="Left">
 
-        <StackPanel Orientation="Horizontal" Grid.Row="3" 
-                    
-                    HorizontalAlignment="Right">
-            <Button x:Name="btnCancel" Content="Cancel" 
-                    Command="{ Binding CloseSettings }" Click="btnCancel_Click">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="5,5,0,0" >
+                <Label Content="Telldus engine (ip-adress):"  FontSize="8"/>
+            </StackPanel>
 
-             
-                
-            </Button>
-
-            <Button x:Name="btnSave" Command="{Binding SaveSettings}"
-                    Content="Save"
-                    Margin="5,0,0,0" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="5,5,0,0">
+                <Label Content="Description:" FontSize="8"  />
+            </StackPanel>
 
         </StackPanel>
 
+
+        <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch">
+            <StackPanel Orientation="Horizontal" Margin="5,10,0,0">
+                <TextBox x:Name="txtTelldus"
+                         Text="{Binding TxtTelldus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                         MaxLength="32"
+                         Width="170"
+                         Height="20"
+                         TextAlignment="Left"
+                         VerticalAlignment="Top"
+                         HorizontalAlignment="Left"
+                         IsEnabled="{Binding IsNewItem}"
+                         >
+
+
+                </TextBox>
+
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="5,5,0,0" Height="50">
+                <TextBox x:Name="txtDescription"
+                         Text="{Binding TxtDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                         Width="150"
+                         Height="45"
+                         MaxLength="80"
+                         TextWrapping="Wrap"
+                         TextAlignment="Left"
+                         VerticalAlignment="Top"
+                         HorizontalAlignment="Left"
+                          />
+            </StackPanel>
+            
+        </StackPanel>
+
+        <Border Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" BorderBrush="Gainsboro"
+                HorizontalAlignment="Stretch" Width="290">
+
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#FFFCFCFC" Offset="0" />
+                                <GradientStop Color="#FFEFEFEF" Offset="1" />
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers></Style.Triggers>
+                </Style>
+            </Border.Style>
+
+            <DockPanel Background="AliceBlue">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Width="70" Margin="10" Command="{Binding OkCommand}"
+                            IsEnabled="{Binding SaveOk}"
+                            Height="20" >OK</Button>
+                    <Button Width="70" Margin="10" Height="26" Command="{Binding CancelCommand}" >Cancel</Button>
+                    <Button Width="70" Margin="10" Command="{Binding ApplyCommand}" 
+                            IsEnabled="{Binding SaveOk}"
+                            CommandParameter="Apply" Height="26">Apply</Button>
+                </StackPanel>
+            </DockPanel>
+        </Border>
     </Grid>
+
+
+
+
+
 </Controls:MetroWindow>

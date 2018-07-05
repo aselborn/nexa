@@ -38,7 +38,8 @@ namespace Nexa.ViewModels
 
         public MainWindowViewModel()
         {
-            _dataApi.GetDbDevices.ForEach(Devices.Add);
+            //_dataApi.GetDbDevices.ForEach(Devices.Add);
+            _dataApi.GetDbDevices.OrderBy(p=>p.DeviceName).ToList().ForEach(Devices.Add);
             for (int n = 0; n < 7; n++)
             {
                 WeekDaysCollection.Add(new ViewModels.WeekDays() { NameOfWeekDay = WeekDayName(n), WeekDayId = n });
