@@ -50,6 +50,18 @@ namespace Nexa.Models
                 NotifyPropertyChanged(nameof(DeviceType));
             }
         }
+
+        [XmlElement]
+        private int? _nexaId;
+        public int? NexaId
+        {
+            get => _nexaId;
+            set
+            {
+                _nexaId = value;
+                NotifyPropertyChanged(nameof(NexaId));
+            }
+        }
  
         
         public virtual ICollection<NexaTimeSchema> timeschemas { get; set; }

@@ -11,7 +11,7 @@ namespace Nexa.Models
     public class NexaTimeSchema : ViewModelBase
     {
         private int _id;
-        [Key]
+        [Key] // Satt om automatisk räknare.
         public int Id
         {
             get => _id;

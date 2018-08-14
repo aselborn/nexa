@@ -125,12 +125,17 @@
             <StackPanel Margin="5">
                 <StackPanel Orientation="Horizontal" Margin="5">
                     <TextBlock Width="100" VerticalAlignment="Center">Nexa Enhet:</TextBlock>
-                    
-                    <TextBox Width="200" Name="txtDeviceName" 
-                             Text="{Binding TextBoxDeviceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
 
-                    </TextBox>
+                    <TextBox Width="200" Name="txtDeviceName" 
+                             Text="{Binding TextBoxDeviceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <TextBlock Width="100" VerticalAlignment="Center">Nexa ID:</TextBlock>
+                    <TextBox Width="30" TextAlignment="Center" Name="txtNexaId" 
+                             Text="{Binding TextBoxNexaId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+                
                 <StackPanel Orientation="Horizontal" Margin="5">
                     <TextBlock Width="100" VerticalAlignment="Center">Beskrivning:</TextBlock>
                     <TextBox Width="200" x:Name="txtDescription" 
@@ -138,7 +143,18 @@
                         UpdateSourceTrigger=PropertyChanged}">
 
                     </TextBox>
-                    <Button Width="90" x:Name="btnSave" Margin="10,0,0,0" Command="{Binding SaveDevice}">Spara</Button>
+                    <Button Width="90" 
+                            x:Name="btnSave" Margin="10,0,0,0" 
+                            Command="{Binding SaveDevice}">Spara</Button>
+
+                    <Button Width="75"
+                            Command="{Binding PrepareNewDevice}"
+                            IsEnabled="{Binding IsNewDeviceEnabled}"
+                            Content="Ny enhet"
+                            FocusManager.FocusedElement="{Binding ElementName=txtDeviceName}"
+                            x:Name="btnNewDevice" Margin="10,0,0,0">
+                            
+                    </Button>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
@@ -174,6 +190,22 @@
                                 </Style.Triggers>
                             </Style>
                         </MenuItem.Style>
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem Header="Skicka ON" Command="{Binding SendOn}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}">
+
+                        <MenuItem.Style>
+                            <Style TargetType="{x:Type MenuItem}">
+                                <Setter Property="IsEnabled" Value="False"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems.Count}" Value="1">
+                                        <Setter Property="IsEnabled" Value="True"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </MenuItem.Style>
+
                     </MenuItem>
                 </ContextMenu>
             </ListView.ContextMenu>
@@ -241,9 +273,6 @@
                         Margin="5,0,0,0" Width="50"
                         FocusManager.FocusedElement="{Binding ElementName=txtTimePoint}"
                         Content="Ny" >
-
-
-
                 </Button>
 
             </StackPanel>

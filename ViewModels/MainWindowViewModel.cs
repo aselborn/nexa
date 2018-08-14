@@ -22,16 +22,14 @@ namespace Nexa.ViewModels
         private DataApi _dataApi = new DataApi();
         
         public ObservableCollection<NexaDevice> Devices { get; } = new ObservableCollection<NexaDevice>();
-
         public ObservableCollection<WeekDays> WeekDaysCollection { get; } = new ObservableCollection<WeekDays>();
         public ObservableCollection<ActionsText> ActionCollection { get; } = new ObservableCollection<ActionsText>();
         public ObservableCollection<NexaTimeSchema> NexaTimeschemas { get; set; } = new ObservableCollection<NexaTimeSchema>();
 
-        
-
         private Boolean _isAllowed;
         private Boolean _isSaveEnabled ;
         private Boolean _isNewEnabled;
+        private Boolean _isNewDeviceEnabled;
         private Boolean _isDeleteEnabled;
         private Boolean _isDeleteRecordEnabled;
         private string  _saveUpdateText;
@@ -55,14 +53,16 @@ namespace Nexa.ViewModels
         public ICommand SaveDevice => new RelayCommand(x => DoSaveNewDevice(), x => IsAllowed);
         public ICommand SaveSchema => new RelayCommand(x => DoSaveNewSchema(), x => IsSaveEnabled);
         public ICommand PrepareNew => new RelayCommand(x => DoPrepareNew(), x => IsNewEnabled);
-
+        public ICommand PrepareNewDevice => new RelayCommand(x => DoPrepareNewDevice(), x => IsNewDeviceEnabled);
         public ICommand DeleteDevice => new RelayCommand(p => DoDelete(p), p => IsDeleteEnabled);
         public ICommand ExitApplication => new RelayCommand(p => DoExit(), p => true);
         public ICommand DeleteTimeSchema => new RelayCommand(v => DoDeleteTimeSchema(v),v=> IsDeleteTimeschemaEnabled);
         public ICommand WriteConfigFile => new RelayCommand(z => DoWriteConfigurationFile(), z => true);
         public ICommand ShowSettingsWindow => new RelayCommand(_ => DoShowSettings(), _ => true);
-
         public ICommand RemoveMulipleTimeschemas => new RelayCommand(DoRemoveMulpleSchemas, c => true);
+        public ICommand SendOn => new RelayCommand(x=> DoSendOn(), c => true);
+
+        
 
         private void DoRemoveMulpleSchemas(object ItemsInList)
         {
@@ -127,9 +127,16 @@ namespace Nexa.ViewModels
             
         }
 
-        private void DoSaveNewSchema()
+        private void DoPrepareNewDevice()
         {
 
+            TextBoxDeviceName = "";
+            TextBoxNexaId = 0;
+            TextBoxDescription = "";
+        }
+        private void DoSaveNewSchema()
+        {
+            
             NexaTimeSchema timeSchema = new NexaTimeSchema();
             timeSchema.Action = _selectedAction;
             timeSchema.Dayofweek = _selectedWeekIndex + 1;
@@ -160,20 +167,35 @@ namespace Nexa.ViewModels
             }
         }
 
+        //Sending ON for selected device
+        private void DoSendOn()
+        {
+            
+        }
+
         private void DoSaveNewDevice()
         {
-            NexaDevice nexaDevice = new NexaDevice() { DeviceName = _TextBoxDeviceName, DeviceType = _TextBoxDescription };
+            NexaDevice nexaDevice = new NexaDevice() { DeviceName = _TextBoxDeviceName, DeviceType = _TextBoxDescription, NexaId=_TextBoxNexaId };
 
             
             TextBoxDescription = string.Empty;
             TextBoxDeviceName = string.Empty;
 
-            _dataApi.SaveNewDevice(nexaDevice);
+            if (IsNewDeviceEnabled)
+            {
+                _dataApi.SaveNewDevice(nexaDevice);
+            }
+            else
+            {
+                nexaDevice.DeviceId = _selectedDevice.DeviceId;
+                _dataApi.UpdateDevice(nexaDevice);
+            }
 
             Devices.Clear();
             _dataApi.GetDbDevices.ForEach(Devices.Add);
-            
 
+            IsNewDeviceEnabled = true;
+            IsSaveEnabled = false;
         }
         
         public bool IsAllowed
@@ -192,7 +214,16 @@ namespace Nexa.ViewModels
             {
                 _isNewEnabled = value;
                 NotifyPropertyChanged(nameof(IsNewEnabled));
+            }
+        }
 
+        public bool IsNewDeviceEnabled
+        {
+            get => _isNewDeviceEnabled;
+            set
+            {
+                _isNewDeviceEnabled = value;
+                NotifyPropertyChanged(nameof(IsNewDeviceEnabled));
             }
         }
 
@@ -273,6 +304,17 @@ namespace Nexa.ViewModels
             }
         }
 
+        private int? _TextBoxNexaId;
+        public int? TextBoxNexaId
+        {
+            get => _TextBoxNexaId;
+            set
+            {
+                _TextBoxNexaId = value;
+                NotifyPropertyChanged(nameof(TextBoxNexaId));
+            }
+        }
+
         private NexaDevice _selectedDevice;
         public NexaDevice SelectedDevice
         {
@@ -298,7 +340,13 @@ namespace Nexa.ViewModels
 
                 TimeschemasCount = _selectedDevice.timeschemas != null ? _selectedDevice.timeschemas.Count.ToString() : "";
                 IsNewEnabled = true;
-                
+
+
+                TextBoxDeviceName = _selectedDevice.DeviceName;
+                TextBoxNexaId = _selectedDevice.NexaId == null ? 0 : _selectedDevice.NexaId;
+                TextBoxDescription = _selectedDevice.DeviceType == null ? "" : _selectedDevice.DeviceType;
+
+                IsNewDeviceEnabled = false;
             }
         }
 
@@ -317,7 +365,7 @@ namespace Nexa.ViewModels
                 
                 ViewInformation();
 
-                SaveUpdateText = "Update";
+                SaveUpdateText = "Uppdatera";
 
             }
         }

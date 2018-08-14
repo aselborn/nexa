@@ -113,7 +113,7 @@ namespace Nexa.ViewModels
                 //dbContext.NexaDeviceObject.Add(new NexaDevice() { DeviceName = device.DeviceName, DeviceType = device.DeviceType });
                 dbContext.NexaDeviceObject.Add(device);
                 int n = dbContext.SaveChanges();
-
+                
                 dbContext.SaveChanges();
             }
             catch (Exception ep)
@@ -170,6 +170,21 @@ namespace Nexa.ViewModels
             devices.Add(device4);
 
             return devices;
+        }
+
+        internal void UpdateDevice(NexaDevice nexaDevice)
+        {
+
+            var record = dbContext.NexaDeviceObject.SingleOrDefault(p => p.DeviceId == nexaDevice.DeviceId);
+            if (record != null)
+            {
+                record.NexaId = nexaDevice.NexaId;
+                record.DeviceName = nexaDevice.DeviceName;
+                record.DeviceType = nexaDevice.DeviceType;
+
+                dbContext.SaveChanges();
+            }
+
         }
     }
 
