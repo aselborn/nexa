@@ -29,7 +29,7 @@ namespace Nexa.ViewModels
         private Boolean _isAllowed;
         private Boolean _isSaveEnabled ;
         private Boolean _isNewEnabled;
-        private Boolean _isNewDeviceEnabled;
+        private Boolean _isNewDeviceEnabled=true;
         private Boolean _isDeleteEnabled;
         private Boolean _isDeleteRecordEnabled;
         private string  _saveUpdateText;
@@ -60,8 +60,7 @@ namespace Nexa.ViewModels
         public ICommand WriteConfigFile => new RelayCommand(z => DoWriteConfigurationFile(), z => true);
         public ICommand ShowSettingsWindow => new RelayCommand(_ => DoShowSettings(), _ => true);
         public ICommand RemoveMulipleTimeschemas => new RelayCommand(DoRemoveMulpleSchemas, c => true);
-        public ICommand SendOn => new RelayCommand(x=> DoSendOn(), c => true);
-
+       
         
 
         private void DoRemoveMulpleSchemas(object ItemsInList)
@@ -167,11 +166,6 @@ namespace Nexa.ViewModels
             }
         }
 
-        //Sending ON for selected device
-        private void DoSendOn()
-        {
-            
-        }
 
         private void DoSaveNewDevice()
         {

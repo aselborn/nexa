@@ -1,5 +1,6 @@
 ﻿using Nexa.ViewModels;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,14 +9,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Nexa.Models 
+namespace Nexa.Models
 {
-    
+
     [Table("NexaDevice")]
-    public class NexaDevice : ViewModelBase
+    public class NexaDevice : ViewModelBase, ICollection
     {
-       
+        private ArrayList arrDevice = new ArrayList();
         private int _deviceId;
+
+        public NexaDevice this[int index]
+        {
+            get => (NexaDevice)arrDevice[index];
+        }
+
         [XmlElement]
         [Key]
         public int DeviceId
@@ -62,9 +69,29 @@ namespace Nexa.Models
                 NotifyPropertyChanged(nameof(NexaId));
             }
         }
- 
-        
+
+
         public virtual ICollection<NexaTimeSchema> timeschemas { get; set; }
-        
+
+        public int Count => throw new NotImplementedException();
+
+        public object SyncRoot => throw new NotImplementedException();
+
+        public bool IsSynchronized => throw new NotImplementedException();
+
+        public void CopyTo(Array array, int index)
+        {
+            arrDevice.CopyTo(array, index);
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            return arrDevice.GetEnumerator();
+        }
+
+        public void Add (NexaTimeSchema schema)
+        {
+            arrDevice.Add(schema);
+        }
     }
 }

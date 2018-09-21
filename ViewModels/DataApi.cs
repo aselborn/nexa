@@ -75,6 +75,18 @@ namespace Nexa.ViewModels
 
             NexaDevice aDevice = devices[0];
 
+            List<NexaDevice> dd = devices.ToList();
+
+            XmlSerializer ss = new XmlSerializer(dd.GetType());
+
+            ss.Serialize(Console.Out, ss);
+
+            List<NexaTimeSchema> timeSchemas = aDevice.timeschemas.ToList();
+
+            XmlSerializer xmlSerializer = new XmlSerializer(timeSchemas.GetType());
+
+            xmlSerializer.Serialize(Console.Out, timeSchemas);
+
             XmlWriterSettings writerSettings = new XmlWriterSettings();
             writerSettings.Encoding = UTF8Encoding.Default;
             writerSettings.WriteEndDocumentOnClose = true;

@@ -192,21 +192,7 @@
                         </MenuItem.Style>
                     </MenuItem>
                     <Separator />
-                    <MenuItem Header="Skicka ON" Command="{Binding SendOn}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}">
-
-                        <MenuItem.Style>
-                            <Style TargetType="{x:Type MenuItem}">
-                                <Setter Property="IsEnabled" Value="False"></Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems.Count}" Value="1">
-                                        <Setter Property="IsEnabled" Value="True"></Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </MenuItem.Style>
-
-                    </MenuItem>
+                    
                 </ContextMenu>
             </ListView.ContextMenu>
 
