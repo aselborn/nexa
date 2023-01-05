@@ -159,6 +159,8 @@
             </StackPanel>
         </StackPanel>
 
+        
+        
         <ListView Margin="5,5,0,0"
             ItemsSource="{Binding Devices}"
             SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
@@ -169,10 +171,12 @@
 
                 <GridView>
                     <GridViewColumn Header="Enhet" Width="150" DisplayMemberBinding="{Binding DeviceName}"></GridViewColumn>
-                    <GridViewColumn Header="Enhet beskrivning" Width="500"
+                    <GridViewColumn Header="Enhet beskrivning" Width="350"
                                     DisplayMemberBinding="{Binding DeviceType}">
                     </GridViewColumn>
 
+                    
+                    
                 </GridView>
             </ListView.View>
 
