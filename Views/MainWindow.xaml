@@ -1,4 +1,4 @@
-﻿<Window x:Class="Nexa.MainWindow"
+﻿<Controls:MetroWindow x:Class="Nexa.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,7 +8,12 @@
         xmlns:vm="clr-namespace:Nexa.ViewModels"
         xmlns:models="clr-namespace:Nexa.Models"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="700">
+        WindowStartupLocation="CenterScreen"
+        GlowBrush="AliceBlue"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        Title="MainWindow" Height="800" Width="700">
     <!--<Window.DataContext>
         <vm:MainWindowViewModel />
     </Window.DataContext>-->
@@ -16,6 +21,88 @@
 
     </Window.Resources>
 
+
+    <metro:MetroWindow.InputBindings>
+        <KeyBinding Key="F2" Command="{Binding ShowSettingsWindow}" />
+    </metro:MetroWindow.InputBindings>
+
+    <Controls:MetroWindow.Flyouts>
+        <Controls:FlyoutsControl>
+            <Controls:Flyout Header="{StaticResource FlyoutText}" IsOpen="{Binding SettingsOpen}" Style="{StaticResource FlyOutStyle}">
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10">
+                        <StackPanel.Resources>
+                            <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBox1}">
+                                <Setter Property="Margin" Value="8,5"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Style>
+                        </StackPanel.Resources>
+
+                        <CheckBox IsChecked="{Binding Path=Settings.MinimalisticMode}" Content="{StaticResource t_MinimalisticMode}" />
+                        <TextBlock Text="{StaticResource t_MinimalisticMode}" FontSize="10" Margin="40,0,0,0"></TextBlock>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{StaticResource t_Scale}" 
+                                       Margin="8,10,0,0"
+                                       Grid.Column ="0"  
+                                       HorizontalAlignment="Left" 
+                                       Style="{StaticResource Header3}">
+                            </TextBlock>
+
+                            <Slider Grid.Column="1"  
+                                    x:Name="scaleSlider" 
+                                    Maximum="4" 
+                                    Minimum="0.1" 
+                                    IsSnapToTickEnabled="True"
+                                    Style="{StaticResource SliderExtension}"
+                                    Cursor="Hand" 
+                                    Margin="10,12" 
+                                    TickFrequency="0.01"
+                                    SmallChange="0.01"
+                                    LargeChange="0.1"
+                                    HorizontalAlignment="Stretch"
+                                    Width="100"
+                                    Value="{Binding Path=Settings.Scale, UpdateSourceTrigger=PropertyChanged}"    
+                                    >
+                            </Slider>
+
+                            <TextBlock x:Name="sliderValue" Grid.Column="2" 
+                                       Height="22" 
+                                       TextAlignment="Right"  
+                                       Margin="5,0,0,0"
+                                       Foreground="White"
+                                       Style="{StaticResource Header3}"
+                                       Text="{Binding ElementName=scaleSlider, 
+                                                      Path=Value, 
+                                                      UpdateSourceTrigger=PropertyChanged, 
+                                                      StringFormat={}{0:P0}}"  />
+
+                            <Button Margin="5,0" Grid.Column="3" Height="20" Command="{Binding ResetScaleCommand}">Reset</Button>
+
+                        </Grid>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Controls:Flyout>
+
+            <Controls:Flyout Header="{StaticResource t_ApplicationTitle}" 
+                             IsOpen="{Binding AboutOpen }"
+                             Style="{StaticResource FlyOutStyle}">
+
+                <!--<ContentControl Content="{StaticResource AboutTemplate}" DataContext="{Binding AboutViewModel}"/>-->
+
+            </Controls:Flyout>
+                             
+        </Controls:FlyoutsControl>
+    </Controls:MetroWindow.Flyouts>
+    
     <Grid>
         <Grid.Resources>
             <ObjectDataProvider x:Key="EnumDayOfWeek" MethodName="GetValues"
@@ -27,18 +114,28 @@
         </Grid.Resources>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="80" />
-            <RowDefinition Height="90" />
-            <RowDefinition Height="80" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="150" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Margin="5">
             <StackPanel Margin="5">
                 <StackPanel Orientation="Horizontal" Margin="5">
-                    <TextBlock Width="100" VerticalAlignment="Center">Nexa Device:</TextBlock>
-                    <TextBox Width="200" Name="txtDeviceName" Text="{Binding TextBoxDeviceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    <TextBlock Width="100" VerticalAlignment="Center">Nexa Enhet:</TextBlock>
+
+                    <TextBox Width="200" Name="txtDeviceName" 
+                             Text="{Binding TextBoxDeviceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <TextBlock Width="100" VerticalAlignment="Center">Nexa ID:</TextBlock>
+                    <TextBox Width="30" TextAlignment="Center" Name="txtNexaId" 
+                             Text="{Binding TextBoxNexaId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+                
                 <StackPanel Orientation="Horizontal" Margin="5">
                     <TextBlock Width="100" VerticalAlignment="Center">Beskrivning:</TextBlock>
                     <TextBox Width="200" x:Name="txtDescription" 
@@ -46,12 +143,25 @@
                         UpdateSourceTrigger=PropertyChanged}">
 
                     </TextBox>
-                    <Button Width="90" x:Name="btnSave" Margin="10,0,0,0" Command="{Binding SaveDevice}">Spara</Button>
+                    <Button Width="90" 
+                            x:Name="btnSave" Margin="10,0,0,0" 
+                            Command="{Binding SaveDevice}">Spara</Button>
+
+                    <Button Width="75"
+                            Command="{Binding PrepareNewDevice}"
+                            IsEnabled="{Binding IsNewDeviceEnabled}"
+                            Content="Ny enhet"
+                            FocusManager.FocusedElement="{Binding ElementName=txtDeviceName}"
+                            x:Name="btnNewDevice" Margin="10,0,0,0">
+                            
+                    </Button>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
 
-        <ListView 
+        
+        
+        <ListView Margin="5,5,0,0"
             ItemsSource="{Binding Devices}"
             SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
             
@@ -60,85 +170,196 @@
             <ListView.View>
 
                 <GridView>
-                    <GridViewColumn Header="Device" Width="150" DisplayMemberBinding="{Binding DeviceName}"></GridViewColumn>
-                    <GridViewColumn Header="Device beskrivning" Width="500"
-                                    DisplayMemberBinding="{Binding DeviceDescription}">
+                    <GridViewColumn Header="Enhet" Width="150" DisplayMemberBinding="{Binding DeviceName}"></GridViewColumn>
+                    <GridViewColumn Header="Enhet beskrivning" Width="350"
+                                    DisplayMemberBinding="{Binding DeviceType}">
                     </GridViewColumn>
 
+                    
+                    
                 </GridView>
             </ListView.View>
 
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Delete" Command="{Binding DeleteDevice}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}">
+                        <MenuItem.Style>
+                            <Style TargetType="{x:Type MenuItem}">
+                                <Setter Property="IsEnabled" Value="False"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems.Count}" Value="1">
+                                        <Setter Property="IsEnabled" Value="True"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </MenuItem.Style>
+                    </MenuItem>
+                    <Separator />
+                    
+                </ContextMenu>
+            </ListView.ContextMenu>
+
         </ListView>
 
-
-        <StackPanel Orientation="Vertical" Margin="5" Grid.Row="2">
+        <!--DataContext="{Binding RelativeSource={RelativeSource Self}}"-->
+        
+        <StackPanel Orientation="Vertical" Margin="5,10" Grid.Row="2">
             <StackPanel Orientation="Horizontal" Margin="5">
-                <TextBlock Width="50" VerticalAlignment="Center">Vald:</TextBlock>
-                <TextBlock Width="200" VerticalAlignment="Center" Text="{Binding SelectedDevice.DeviceName}"/>
+                <TextBlock Width="50" VerticalAlignment="Center" Foreground="Chocolate">Vald:</TextBlock>
+                <TextBlock Width="200" VerticalAlignment="Center" Foreground="Red" Text="{Binding SelectedDevice.DeviceName}"/>
             </StackPanel>
 
             <Line Fill="Aqua"></Line>
             <StackPanel Orientation="Horizontal" Margin="5">
                 <TextBlock Width="60" VerticalAlignment="Center">Veckodag:</TextBlock>
-                <ComboBox x:Name="cboVeckodagar" Margin="5,0,0,0"  SelectedItem="{Binding SelectedWeekDay}">
 
-                    <ComboBoxItem Content="Måndag" Tag="1" IsSelected="True" />
-                    <ComboBoxItem Content="Tisdag" Tag="2" />
-                    <ComboBoxItem Content="Onsdag" Tag="3" />
-                    <ComboBoxItem Content="Torsdag" Tag="4" />
-                    <ComboBoxItem Content="Fredag" Tag="5" />
-                    <ComboBoxItem Content="Lördag" Tag="6" />
-                    <ComboBoxItem Content="Söndag" Tag="7" />
+                <ComboBox HorizontalAlignment="Left" x:Name="cboWeekDay"
+                          ItemsSource="{Binding Path=WeekDaysCollection}"
+                          SelectedIndex="{Binding SelectedWeekIndex}"
+                          DisplayMemberPath="{Binding Path=WeekDaysCollection.NameOfWeekDay}" 
+                          IsSynchronizedWithCurrentItem="True">
 
+                    <!--<ComboBox.ItemTemplate>
+                    SelectedItem="{Binding WeekDayName, RelativeSource={RelativeSource Self}}"
+                        <DataTemplate>
+                            <TextBlock Text="{Binding NameOfWeekDay}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>-->
+                    
                 </ComboBox>
+
+                <TextBlock Text="{Binding Path=WeekDaysCollection.WeekdayName}" />
+                
                 <TextBlock Width="60" VerticalAlignment="Center" Margin="5,0,0,0">Händelse:</TextBlock>
                 <ComboBox x:Name="cboEvent" Margin="5,0,0,0" 
-                          SelectedItem="{Binding SelectedAction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                    <ComboBoxItem Content="PÅ" IsSelected="True" />
-                    <ComboBoxItem Content="AV" />
+                          
+                          ItemsSource="{Binding Path=ActionCollection}"
+                          SelectedIndex="{Binding SelectedAction}"
+                          DisplayMemberPath="{Binding Path=ActionCollection.ActionText}"
+                          IsSynchronizedWithCurrentItem="True"
+                          >
+                    
+                    <!--<ComboBoxItem Content="AV" IsSelected="True" />
+                    SelectedItem="{Binding SelectedAction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    <ComboBoxItem Content="PÅ" />-->
                 </ComboBox>
 
                 <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">Tidpunkt:</TextBlock>
                 <TextBox x:Name="txtTimePoint" MaxLength="5"
-                         Text="{Binding TextBoxTimePoint}"  
+                         Text="{Binding TextBoxTimePoint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  
                          Width="40" Margin="5,0,0,0">
 
                 </TextBox>
 
                 <Button Command="{Binding SaveSchema}" 
+                        IsEnabled="{Binding IsSaveEnabled}"
                         Margin="5,0,0,0" Width="50"
-                        Content="Spara" >
+                        Content="{Binding SaveUpdateText}" >
                 </Button>
 
-                <Button Command="{Binding PrepareNew}" 
+                <Button Command="{Binding PrepareNew}"
+                        IsEnabled="{Binding IsNewEnabled}"
                         Margin="5,0,0,0" Width="50"
                         FocusManager.FocusedElement="{Binding ElementName=txtTimePoint}"
                         Content="Ny" >
-                    
-                    
-                    
                 </Button>
 
             </StackPanel>
 
         </StackPanel>
 
-        <ListView Grid.Row="3"
-            ItemsSource="{Binding MyDeviceWrapper}" ScrollViewer.CanContentScroll="True"
-                      ScrollViewer.VerticalScrollBarVisibility="Auto"
-                          SelectedItem="{Binding SelectedWrapperSchema}">
-                <ListView.View>
-                    <GridView ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        ScrollViewer.CanContentScroll="True" >
-                        <GridViewColumn Header="Device" DisplayMemberBinding="{Binding DeviceName}" />
-                        <GridViewColumn Header="Veckodag" DisplayMemberBinding="{Binding WeekDay}"/>
-                        <GridViewColumn Header="Händelse" DisplayMemberBinding="{Binding ActionText}"/>
-                        <GridViewColumn Header="Tidpunkt" DisplayMemberBinding="{Binding TimePoint}"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+        <!--ItemsSource="{Binding MyDeviceWrapper}"-->
+        <DataGrid
+            ItemsSource="{Binding NexaTimeschemas }"
+            SelectedItem="{Binding SelectedNexaTimeschema, Mode=TwoWay}"
+            SelectionMode="Extended"
+            CanUserAddRows="False"
+            Grid.Row="3"
+            AutoGenerateColumns="False">
 
-        <!--<Button Grid.Row="3" Width="80" HorizontalAlignment="Right">Spara</Button>-->
+            <DataGrid.ItemContainerStyle>
+                <Style TargetType="{x:Type DataGridRow}">
+                    <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=IsSelected}" />
+                </Style>
+            </DataGrid.ItemContainerStyle>
+            <DataGrid.Columns>
+                
+                <DataGridTextColumn Header="Veckodag" Width="2*" Binding="{Binding WeekDayAsText}" />
+                <DataGridTextColumn Header="Av/På" Width="2*" Binding="{Binding ActionText}" />
+                <DataGridTextColumn Header="Tidpunkt" Width="2*" Binding="{Binding TimePointAsString}" />
+                <DataGridTextColumn Header="Slutförd" Width="2*" Binding="{Binding UpdatedAtAsString}" />
+
+            </DataGrid.Columns>
+
+
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Remove record" 
+                              CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"
+                              Command="{Binding DeleteTimeSchema}">
+
+                        <MenuItem.Style>
+                            <Style TargetType="{x:Type MenuItem}">
+                                <Setter Property="IsEnabled" Value="False"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems.Count}" Value="1">
+                                        <Setter Property="IsEnabled" Value="True"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </MenuItem.Style>
+                    
+                    </MenuItem>
+
+                    <Separator />
+
+                    <MenuItem Header="Remove multiple records" Command="{Binding RemoveMulipleTimeschemas}" 
+                              CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItems}" />
+
+
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+
+
+            <DataGrid.InputBindings>
+                <!--<MouseBinding MouseAction="LeftDoubleClick"
+                              com-->
+            </DataGrid.InputBindings>
+            
+        </DataGrid>
+
         
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="2"  HorizontalAlignment="Right">
+            <Button Grid.Row="4" Width="100" 
+                    Command="{Binding WriteConfigFile}"
+                    Content="Write Config"
+                    x:Name="btnWriteConfig">
+            </Button>
+            <Button Grid.Row="4" 
+                    Margin="20,0,0,0"
+                    Command="{Binding ExitApplication}"
+                    Width="80" HorizontalAlignment="Right">Exit</Button>
+            
+        </StackPanel>
+        
+        <StatusBar Grid.Row="5">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        
+                    </StackPanel>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <Separator Background="White" />
+            <StatusBarItem>
+                <TextBlock Text="{Binding TimeschemasCount}"/>
+            </StatusBarItem>
+            <Separator Background="White"/>
+            <StatusBarItem>
+            </StatusBarItem>
+        </StatusBar>
+
     </Grid>
-</Window>
+</Controls:MetroWindow>

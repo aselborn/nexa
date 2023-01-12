@@ -1,9 +1,13 @@
 ﻿using Nexa.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Nexa.ViewModels
 {
@@ -15,112 +19,141 @@ namespace Nexa.ViewModels
             dbContext = new DeviceContext();
         }
 
-        public List<DeviceWrapper> GetWrappers(int deviceId)
+        public NexaDevice GetDeviceByDeviceId(int deviceId)
         {
-            List<DeviceWrapper> wrappers = new List<DeviceWrapper>();
-
-            List<DBSchema> schemas = dbContext.timeschema.Where(p => p.DeviceId == deviceId)
-                .OrderByDescending(x => x.DayOfWeek)
-                .OrderByDescending(z => z.TimePoint).ToList();
-
-            foreach (DBSchema schema in schemas)
-            {
-
-                DBDevice d = dbContext.devices.Find(schema.DeviceId);
-                
-                DeviceWrapper wrap = new DeviceWrapper
-                    (
-                    new Schema
-                    (
-                        new Device()
-                        {
-                            DeviceId = d.deviceID,
-                            DeviceDescription = d.DeviceType,
-                            DeviceName = d.DeviceName
-                        }
-                        )
-                    {
-                        WeekDay = schema.DayOfWeek,
-                        ActionText = schema.Action.ToString(),
-                        TimePoint = schema.TimePoint
-                    });
-
-                wrappers.Add(wrap);
-            }
-
-            return wrappers;
-        }
-        public List<DeviceWrapper> GetAllConfiguration
-        {
-            get
-            {
-                List<DeviceWrapper> wrappers = new List<DeviceWrapper>();
-                foreach (DBDevice d in dbContext.devices)
-                {
-
-                    
-
-                    var selection = dbContext.timeschema.Where(p => p.DeviceId == d.deviceID);
-                    int n = dbContext.timeschema.Count();
-
-                    foreach (DBSchema schema in selection)
-                    {
-                        
-                        DeviceWrapper wrap = new DeviceWrapper
-                            (
-                            new Schema
-                            (
-                                new Device()
-                                {
-                                    DeviceId = d.deviceID,
-                                    DeviceDescription = d.DeviceType,
-                                    DeviceName = d.DeviceName
-                                }
-                                )
-                            {
-                                WeekDay = schema.DayOfWeek,
-                                ActionText = schema.Action.ToString(),
-                                TimePoint = schema.TimePoint
-                            });
-
-                        wrappers.Add(wrap);
-                    }
-                }
-
-                return wrappers;
-            }
+            return dbContext.NexaDeviceObject.Find(deviceId);
         }
 
-        public void SaveNewDevice(Device device)
+        public NexaDevice GetNexaDevice(int deviceId)
+        {
+            NexaDevice device = dbContext.NexaDeviceObject.Find(deviceId);
+            return device;
+        }
+
+
+        public void DeleteDevice(NexaDevice nexaDevice)
+        {
+            dbContext.NexaDeviceObject.Remove(nexaDevice);
+            int n = dbContext.SaveChanges();
+        }
+
+
+
+        
+        public void SaveNexaTimeschema(NexaTimeSchema schema)
+        {
+            dbContext.NexaTimeSchema.Add(schema);
+            dbContext.SaveChanges();
+        }
+
+        public NexaTimeSchema UpdateNexaTimeschema(NexaTimeSchema schema)
+        {
+            NexaTimeSchema item = dbContext.NexaTimeSchema.SingleOrDefault(p => p.Id == schema.Id);
+            if (item != null)
+            {
+                item.TimePoint = schema.TimePoint;
+                item.UpdatedAt = DateTime.Now;
+                item.Dayofweek = schema.Dayofweek;
+                item.Action = schema.Action;
+
+                dbContext.SaveChanges();
+
+            }
+
+            return item;
+        }
+
+        public void WriteConfig()
+        {
+            List<NexaDevice> devices = dbContext.NexaDeviceObject.ToList();
+
+            List<DeviceObject> deviceObject = new List<DeviceObject>();
+            foreach (NexaDevice device in devices)
+            {
+                deviceObject.Add(new DeviceObject() { Comment = device.DeviceType, DeviceId = device.DeviceId, DeviceName = device.DeviceName });
+            }
+
+            NexaDevice aDevice = devices[0];
+
+            List<NexaDevice> dd = devices.ToList();
+
+            XmlSerializer ss = new XmlSerializer(dd.GetType());
+
+            ss.Serialize(Console.Out, ss);
+
+            List<NexaTimeSchema> timeSchemas = aDevice.timeschemas.ToList();
+
+            XmlSerializer xmlSerializer = new XmlSerializer(timeSchemas.GetType());
+
+            xmlSerializer.Serialize(Console.Out, timeSchemas);
+
+            XmlWriterSettings writerSettings = new XmlWriterSettings();
+            writerSettings.Encoding = UTF8Encoding.Default;
+            writerSettings.WriteEndDocumentOnClose = true;
+            writerSettings.Indent = true;
+
+            MemoryStream ms = new MemoryStream();
+
+            DataContractSerializer serializer = new DataContractSerializer(typeof(DeviceObject));
+            XmlDictionaryWriter writer = XmlDictionaryWriter.CreateDictionaryWriter(XmlWriter.Create(ms));
+
+            serializer.WriteObject(writer, deviceObject, new MyCustomResolver());
+
+            writer.Flush();
+            ms.Position = 0;
+
+
+            //using(XmlWriter writer = XmlWriter.Create("Result.xml", writerSettings))
+            //{
+            //    DataContractSerializer dataContractSerializer = new DataContractSerializer(deviceObject.GetType());
+            //    dataContractSerializer.WriteObject(writer, aDevice);
+            //}
+
+
+        }
+
+        public bool DeleteTimeSchema(NexaTimeSchema item)
+        {
+            dbContext.NexaTimeSchema.Remove(item);
+            return dbContext.SaveChanges() == 1 ? true : false; ;
+        }
+
+        public void SaveNewDevice(NexaDevice device)
         {
             try
             {
-                dbContext.devices.Add(new DBDevice() { DeviceName = device.DeviceName, DeviceType = device.DeviceDescription , deviceID=device.DeviceId});
+                //dbContext.NexaDeviceObject.Add(new NexaDevice() { DeviceName = device.DeviceName, DeviceType = device.DeviceType });
+                dbContext.NexaDeviceObject.Add(device);
+                int n = dbContext.SaveChanges();
+                
                 dbContext.SaveChanges();
             }
             catch (Exception ep)
             {
                 Exception exception = ep;
             }
-            
+
         }
 
-        private List<Device> _dbDevices { get; } = new List<Device>();
-        public List<Device> GetDbDevices
+        private List<NexaDevice> _dbDevices { get; } = new List<NexaDevice>();
+        public List<NexaDevice> GetDbDevices
         {
             get
             {
-                foreach (DBDevice d in dbContext.devices)
+                try
                 {
-                    _dbDevices.Add(new Device() { DeviceId = d.deviceID, DeviceDescription = d.DeviceType, DeviceName = d.DeviceName });
+                    return dbContext.NexaDeviceObject.OrderBy(p => p.DeviceName).ToList();
                 }
+                catch (Exception ep)
+                {
 
-                return _dbDevices;
+                    return null;
+                }
             }
         }
 
-        private List<Device> mDevices;
-        public List<Device> Devices
+        private List<NexaDevice> mDevices;
+        public List<NexaDevice> Devices
         {
             get
             {
@@ -132,48 +165,16 @@ namespace Nexa.ViewModels
             }
         }
 
-        public List<DeviceWrapper> AllItems
+
+
+        private List<NexaDevice> GetDevices()
         {
-            get
-            {
-                return GetAllFakeItems();
-            }
-        }
+            List<NexaDevice> devices = new List<NexaDevice>();
 
-        private List<DeviceWrapper> GetAllFakeItems()
-        {
-            List<DeviceWrapper> wrapper = new List<DeviceWrapper>();
-
-            List<Device> someDevices = GetDevices();
-
-            int n = 1;
-            foreach (Device d in someDevices)
-            {
-                Schema schema = null;
-                if (n % 2 == 0)
-                    schema = new Schema(d) { ActionText = "ON", TimePoint = DateTime.Now.Add(new TimeSpan(1, 1, 1, 1, 1)), WeekDay = 1 };
-                else
-                    schema = new Schema(d) { ActionText = "OFF", TimePoint = DateTime.Now.Add(new TimeSpan(-1, 1, -1, 1, -1)), WeekDay = 2 };
-
-                DeviceWrapper wrp = new DeviceWrapper(schema);
-
-                wrapper.Add(wrp);
-                n++;
-            }
-
-
-
-            return wrapper;
-        }
-
-        private List<Device> GetDevices()
-        {
-            List<Device> devices = new List<Device>();
-
-            Device device = new Device() { DeviceName = "Nexa 1", DeviceId = 1, DeviceComment = "Första kommentaren kommer här", DeviceDescription = "Första beskrivningen" };
-            Device device2 = new Device() { DeviceName = "Nexa 2", DeviceId = 2, DeviceComment = "Andra kommentaren kommer här!!", DeviceDescription = "Andra Beskrivningen" };
-            Device device3 = new Device() { DeviceName = "Nexa 3", DeviceId = 3, DeviceComment = "Tredjekommentaren kommer här!", DeviceDescription = "Tredje beskrivningen!" };
-            Device device4 = new Device() { DeviceName = "Nexa 4", DeviceId = 4, DeviceComment = "Fjärde kommentaren kommer här!", DeviceDescription = "Fjärde beskrivningen!" };
+            NexaDevice device = new NexaDevice() { DeviceName = "Nexa 1", DeviceId = 1 };
+            NexaDevice device2 = new NexaDevice() { DeviceName = "Nexa 2", DeviceId = 2 };
+            NexaDevice device3 = new NexaDevice() { DeviceName = "Nexa 3", DeviceId = 3 };
+            NexaDevice device4 = new NexaDevice() { DeviceName = "Nexa 4", DeviceId = 4 };
 
             devices.Add(device);
             devices.Add(device2);
@@ -181,6 +182,44 @@ namespace Nexa.ViewModels
             devices.Add(device4);
 
             return devices;
+        }
+
+        internal void UpdateDevice(NexaDevice nexaDevice)
+        {
+
+            var record = dbContext.NexaDeviceObject.SingleOrDefault(p => p.DeviceId == nexaDevice.DeviceId);
+            if (record != null)
+            {
+                record.NexaId = nexaDevice.NexaId;
+                record.DeviceName = nexaDevice.DeviceName;
+                record.DeviceType = nexaDevice.DeviceType;
+
+                dbContext.SaveChanges();
+            }
+
+        }
+    }
+
+    public class MyCustomResolver : DataContractResolver
+    {
+        public override Type ResolveName(string typeName, string typeNamespace, Type declaredType, DataContractResolver knownTypeResolver)
+        {
+            return typeof(DeviceObject);
+        }
+
+        public override bool TryResolveType(Type type, Type declaredType, DataContractResolver knownTypeResolver, out XmlDictionaryString typeName, out XmlDictionaryString typeNamespace)
+        {
+            if (type == typeof(DeviceObject))
+            {
+                XmlDictionary dictionary = new XmlDictionary();
+                typeName = dictionary.Add("Devices");
+                typeNamespace = dictionary.Add("http://tempuri.com");
+                return true;
+            }
+            else
+            {
+                return knownTypeResolver.TryResolveType(type, declaredType, null, out typeName, out typeNamespace);
+            }
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using MahApps.Metro.Controls;
-using Nexa.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,22 +11,23 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Nexa
+namespace Nexa.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for SettingsWindow.xaml
     /// </summary>
-    public partial class MainWindow : MetroWindow
+    public partial class SettingsWindow : MetroWindow
     {
-        public MainWindow()
+        public SettingsWindow()
         {
             InitializeComponent();
-            this.DataContext = new MainWindowViewModel();
         }
 
-       
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }

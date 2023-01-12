@@ -15,18 +15,16 @@ namespace Nexa.Models
             var sqliteConnectionInitializer = new SqliteCreateDatabaseIfNotExists<DeviceContext>(modelBuilder);
             Database.SetInitializer(sqliteConnectionInitializer);
 
-            /*
+
             modelBuilder.Entity<DBDevice>()
                 .HasKey(p => p.deviceID);
             modelBuilder.Entity<DBDevice>().Property(p => p.deviceID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
-            */
+
             base.OnModelCreating(modelBuilder);
         }
 
-        public DbSet<DBDevice> devices { get;set;}
-        public DbSet<DBSchema> timeschema { get; set; }
-
         
-
+        public DbSet<NexaDevice> NexaDeviceObject { get; set; }
+        public DbSet<NexaTimeSchema> NexaTimeSchema { get; set; }
     }
 }
